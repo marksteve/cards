@@ -1,13 +1,23 @@
-import { Client } from 'boardgame.io/client';
-import { TicTacToe } from './Game';
+import { Client } from 'boardgame.io/client'
+import { Card, Play, PusoyDos } from './Game'
 
-class TicTacToeClient {
-  client: ReturnType<typeof Client>;
+class PusoyDosClient {
+  client: ReturnType<typeof Client>
 
   constructor() {
-    this.client = Client({ game: TicTacToe });
-    this.client.start();
+    this.client = Client({
+      game: PusoyDos,
+      numPlayers: 4,
+    })
+    this.client.start()
   }
 }
 
-const app = new TicTacToeClient();
+const app = new PusoyDosClient()
+
+window['Card'] = Card
+window['Play'] = Play
+
+if (module.hot) {
+  module.hot.accept()
+}
