@@ -5,6 +5,15 @@ import { ascending } from 'd3-array'
 const RANKS = '3456789TJQKA2'
 const SUITS = 'CSHD'
 
+enum Combi {
+  None,
+  Straight,
+  Flush,
+  FullHouse,
+  Quadro,
+  StraightFlush,
+}
+
 export class Card {
   rank: string
   suit: string
@@ -19,7 +28,7 @@ export class Card {
   }
 
   static fromString(s: string) {
-    const [rank, suit] = s
+    const [rank, suit] = s.split('')
     return new Card(rank, suit)
   }
 
@@ -60,14 +69,14 @@ export class Play {
       if (nums[0] + 4 === nums[4]) {
         // Use the value of the highest (by num) card.
         const card = this.cards.find((c) => num(c) === nums[4])
-        return card.value
+        return card?.value
       } else if (nums[0] === 0) {
         // Let Ace be a high card.
         nums[0] = 13
         nums.sort(ascending)
         if (nums[0] + 4 === nums[4]) {
           const card = this.cards.find((c) => num(c) === 0)
-          return card.value
+          return card?.value
         }
       }
     }
@@ -148,6 +157,7 @@ export class Play {
           return combi * 1000 + val
         }
     }
+    return 0
   }
 
   static fromString(s: string) {
@@ -155,21 +165,12 @@ export class Play {
   }
 }
 
-enum Combi {
-  None,
-  Straight,
-  Flush,
-  FullHouse,
-  Quadro,
-  StraightFlush,
-}
-
 type State = {
-  hands: Card[][]
-  firstTurn: number
+  hands: Record<string, Card[]>
+  firstTurn: string
   discardPile: Card[]
-  lastPlay: Play
-  winners: number[]
+  lastPlay: Play | null
+  winners: string[]
 }
 
 export const PusoyDos: Game = {
@@ -177,17 +178,19 @@ export const PusoyDos: Game = {
   maxPlayers: 4,
 
   setup: (ctx): State => {
-    const deck = ctx.random.Shuffle(Card.newDeck())
-    const hands: Card[][] = []
+    const deck = ctx!.random!.Shuffle(Card.newDeck())
+    const hands: Record<string, Card[]> = {}
 
     // Deal cards
-    let firstTurn
+    let firstTurn = '0'
+    let player = '0'
     while (deck.length > 0) {
+      player = String(Object.keys(hands).length)
       const hand = deck.splice(0, 13)
       if (hand.some((c) => c.value === Card.lowest.value)) {
-        firstTurn = hands.length
+        firstTurn = player
       }
-      hands.push(hand)
+      hands[player] = hand
     }
 
     return {
@@ -217,7 +220,7 @@ export const PusoyDos: Game = {
   },
 
   moves: {
-    play: (G, ctx, play: Play) => {
+    play: (G: State, ctx, play: Play) => {
       const hand = G.hands[ctx.currentPlayer]
       const handValues = hand.map((c) => c.value)
 
@@ -231,7 +234,7 @@ export const PusoyDos: Game = {
 
       // Remove played cards from hand and place in discard pile
       const discard = play.cards.map((card) => {
-        return hand.splice(handValues.indexOf(card.value), 1).pop()
+        return hand.splice(handValues.indexOf(card.value), 1).pop()!
       })
       G.discardPile.push(...discard)
 
@@ -240,11 +243,8 @@ export const PusoyDos: Game = {
       if (hand.length === 0) {
         G.winners.push(ctx.currentPlayer)
       }
-
-      ctx.events.endTurn()
     },
     pass: (G, ctx) => {
-      ctx.events.endTurn()
     },
   },
 

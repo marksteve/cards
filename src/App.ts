@@ -1,23 +1,11 @@
-import { Client } from 'boardgame.io/client'
-import { Card, Play, PusoyDos } from './Game'
+import { Client } from 'boardgame.io/react'
+import PusoyDosBoard from './Board'
+import { PusoyDos } from './Game'
 
-class PusoyDosClient {
-  client: ReturnType<typeof Client>
+const App = Client({
+  game: PusoyDos,
+  board: PusoyDosBoard,
+  numPlayers: 4,
+})
 
-  constructor() {
-    this.client = Client({
-      game: PusoyDos,
-      numPlayers: 4,
-    })
-    this.client.start()
-  }
-}
-
-const app = new PusoyDosClient()
-
-window['Card'] = Card
-window['Play'] = Play
-
-if (module.hot) {
-  module.hot.accept()
-}
+export default App
