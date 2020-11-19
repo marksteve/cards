@@ -1,0 +1,17 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Gaegu', cursive;
+  margin: 0;
+}
+
+/* https://colorhunt.co/palette/202238 */
+
+:root {
+  --accent: #fadcac;
+  --green-1: #158467;
+  --green-2: #197163;
+  --green-3: #065446;
+}

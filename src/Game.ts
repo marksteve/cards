@@ -1,4 +1,4 @@
-import { Game } from 'boardgame.io'
+import { Ctx, Game } from 'boardgame.io'
 import { INVALID_MOVE } from 'boardgame.io/core'
 import { ascending } from 'd3-array'
 
@@ -25,6 +25,14 @@ export class Card {
 
   get value() {
     return RANKS.indexOf(this.rank) * 4 + SUITS.indexOf(this.suit)
+  }
+
+  get [Symbol.toStringTag]() {
+    return this.toString()
+  }
+
+  toString() {
+    return `${this.rank}${this.suit}`
   }
 
   static fromString(s: string) {
@@ -166,11 +174,11 @@ export class Play {
 }
 
 type State = {
-  hands: Record<string, Card[]>
-  firstTurn: string
+  hands: Record<number, Card[]>
+  firstTurn: number
   discardPile: Card[]
   lastPlay: Play | null
-  winners: string[]
+  winners: number[]
 }
 
 export const PusoyDos: Game = {
@@ -178,14 +186,14 @@ export const PusoyDos: Game = {
   maxPlayers: 4,
 
   setup: (ctx): State => {
-    const deck = ctx!.random!.Shuffle(Card.newDeck())
-    const hands: Record<string, Card[]> = {}
+    const deck = ctx.random!.Shuffle(Card.newDeck())
+    const hands: Record<number, Card[]> = {}
 
     // Deal cards
-    let firstTurn = '0'
-    let player = '0'
+    let firstTurn = 0
+    let player = 0
     while (deck.length > 0) {
-      player = String(Object.keys(hands).length)
+      player = Object.keys(hands).length
       const hand = deck.splice(0, 13)
       if (hand.some((c) => c.value === Card.lowest.value)) {
         firstTurn = player
@@ -220,8 +228,8 @@ export const PusoyDos: Game = {
   },
 
   moves: {
-    play: (G: State, ctx, play: Play) => {
-      const hand = G.hands[ctx.currentPlayer]
+    play: (G: State, ctx: Ctx, play: Play) => {
+      const hand = G.hands[parseInt(ctx.currentPlayer, 10)]
       const handValues = hand.map((c) => c.value)
 
       if (!hand.every((c) => handValues.includes(c.value))) {
@@ -241,10 +249,13 @@ export const PusoyDos: Game = {
       G.lastPlay = play
 
       if (hand.length === 0) {
-        G.winners.push(ctx.currentPlayer)
+        G.winners.push(parseInt(ctx.currentPlayer, 10))
       }
+
+      ctx.events?.endTurn!()
     },
     pass: (G, ctx) => {
+      ctx.events?.endTurn!()
     },
   },
 
