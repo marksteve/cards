@@ -24,7 +24,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "server:build": "tsc --build tsconfig.server.json",
+    "server:start": "yarn server:build && node ./dist/server"
   },
   "eslintConfig": {
     "extends": [

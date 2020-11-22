@@ -40,6 +40,10 @@ export class Card {
     return new Card(rank, suit)
   }
 
+  static fromState(card: any) {
+    return new Card(card.rank, card.suit)
+  }
+
   static newDeck() {
     const d: Card[] = []
     for (const rank of RANKS) {
@@ -55,10 +59,12 @@ export class Card {
 
 export class Play {
   cards: Card[]
+  player?: number
 
-  constructor(cards: Card[]) {
+  constructor(cards: Card[], player?: number) {
     this.cards = cards
     this.cards.sort((a, b) => (a.value > b.value ? 1 : -1))
+    this.player = player
   }
 
   isSameRank(cards: Card[]) {
@@ -130,13 +136,15 @@ export class Play {
         if (this.isSameRank(this.cards)) {
           return this.cards[1].value
         } else {
-          throw new Error("Pair doesn't match")
+          console.error("Pair doesn't match")
+          break
         }
       case 3:
         if (this.isSameRank(this.cards)) {
           return this.cards[0].value
         } else {
-          throw new Error("Trio doesn't match")
+          console.error("Trio doesn't match")
+          break
         }
       case 5:
         const [combi, val] = (() => {
@@ -160,28 +168,43 @@ export class Play {
           }
         })()
         if (combi === Combi.None) {
-          throw new Error('Invalid 5-card combination')
+          console.error('Invalid 5-card combination')
+          break
         } else {
           return combi * 1000 + val
         }
     }
-    return 0
+    return null
+  }
+
+  get [Symbol.toStringTag]() {
+    return this.toString()
+  }
+
+  toString() {
+    return this.cards.map((c) => `${c.rank}${c.suit}`).join(' ')
   }
 
   static fromString(s: string) {
     return new Play(s.split(/\s+/).map((c) => Card.fromString(c)))
   }
+
+  static fromState(cards: any[]) {
+    return cards.map((c) => new Card(c.rank, c.suit))
+  }
 }
 
-type State = {
+export type State = {
   hands: Record<number, Card[]>
   firstTurn: number
+  hasStarted: boolean
   discardPile: Card[]
   lastPlay: Play | null
   winners: number[]
 }
 
 export const PusoyDos: Game = {
+  name: 'pusoy-dos',
   minPlayers: 4,
   maxPlayers: 4,
 
@@ -204,6 +227,7 @@ export const PusoyDos: Game = {
     return {
       hands,
       firstTurn,
+      hasStarted: false,
       discardPile: [],
       lastPlay: null,
       winners: [],
@@ -214,35 +238,51 @@ export const PusoyDos: Game = {
     moveLimit: 1,
     order: {
       first: (G, ctx) => G.firstTurn,
-      next: (G, ctx) => {
-        let i = 1
-        while (true) {
-          const nextPlayer = (ctx.playOrderPos + i) % ctx.numPlayers
-          if (G.winners.includes(nextPlayer)) {
-            i++
-          }
-          return nextPlayer
-        }
-      },
+      next: getNext,
     },
   },
 
   moves: {
     play: (G: State, ctx: Ctx, play: Play) => {
       const hand = G.hands[parseInt(ctx.currentPlayer, 10)]
-      const handValues = hand.map((c) => c.value)
+      const handString = hand.map(String)
+      const playValue = play.value
 
-      if (!hand.every((c) => handValues.includes(c.value))) {
+      if (playValue === null) {
         return INVALID_MOVE
       }
 
-      if (G.lastPlay !== null && play.value < G.lastPlay.value) {
+      if (!play.cards.every((c) => handString.includes(String(c)))) {
+        console.log('Play not from hand')
         return INVALID_MOVE
+      }
+
+      if (G.lastPlay === null) {
+        if (!G.hasStarted) {
+          const isLowestInPlay = play.cards
+            .map(String)
+            .includes(String(Card.lowest))
+          if (!isLowestInPlay) {
+            console.log(`First move not ${Card.lowest}`)
+            return INVALID_MOVE
+          } else {
+            G.hasStarted = true
+          }
+        }
+      } else {
+        if (G.lastPlay?.cards.length !== play.cards.length) {
+          console.log('Play not same length as last play')
+          return INVALID_MOVE
+        }
+        if (playValue < G.lastPlay.value!) {
+          console.log('Play value lower that last play')
+          return INVALID_MOVE
+        }
       }
 
       // Remove played cards from hand and place in discard pile
       const discard = play.cards.map((card) => {
-        return hand.splice(handValues.indexOf(card.value), 1).pop()!
+        return hand.splice(hand.map(String).indexOf(String(card)), 1).pop()!
       })
       G.discardPile.push(...discard)
 
@@ -250,11 +290,19 @@ export const PusoyDos: Game = {
 
       if (hand.length === 0) {
         G.winners.push(parseInt(ctx.currentPlayer, 10))
+        G.lastPlay = null
       }
 
       ctx.events?.endTurn!()
     },
     pass: (G, ctx) => {
+      if (G.lastPlay === null) {
+        return INVALID_MOVE
+      }
+      if (G.lastPlay?.player === getNext(G, ctx)) {
+        // Others passed
+        G.lastPlay = null
+      }
       ctx.events?.endTurn!()
     },
   },
@@ -262,4 +310,17 @@ export const PusoyDos: Game = {
   endIf: (G, ctx) => {
     return G.winners.length === 3
   },
+}
+
+function getNext(G: State, ctx: Ctx) {
+  let i = 1
+  while (true) {
+    const nextPlayer = (ctx.playOrderPos + i) % ctx.numPlayers
+    if (G.winners.includes(nextPlayer)) {
+      console.log(`Skipping player ${nextPlayer}`)
+      i++
+    } else {
+      return nextPlayer
+    }
+  }
 }
