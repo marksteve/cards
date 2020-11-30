@@ -1,29 +1,45 @@
 import { BoardProps } from 'boardgame.io/react'
 import React, { useCallback, useState } from 'react'
 import styles from './Board.module.css'
-import { Card, Play, State } from './Game'
-
-const toInt = (playerID: string | null) => parseInt(String(playerID), 10)
+import { Card, State } from './Game'
+import { toInt } from './utils'
 
 export default function PusoyDosBoard({
   G,
   ctx,
   moves,
   playerID,
+  matchData,
 }: BoardProps<State>) {
   const { hands, discardPile } = G
   const currentPlayer = toInt(ctx.currentPlayer)
   const player = toInt(playerID)
   const otherHands = Object.keys(hands)
-    .filter((p) => toInt(p) !== player)
+    .map(toInt)
+    .filter((p) => p !== player)
     .map((p) => ({
-      player: toInt(p),
-      cards: hands[toInt(p)].map(Card.fromState),
+      player: p,
+      name: matchData![p].name!,
+      cards: hands[p].map(Card.fromString),
     }))
+  function handlePlay(cards: Card[]) {
+    moves.play(cards.map(String))
+  }
+  function handlePass() {
+    moves.pass()
+  }
   return (
     <div className={styles.board}>
       <OtherHands hands={otherHands} currentPlayer={currentPlayer} />
-      <Mat cards={discardPile} />
+      <Mat cards={discardPile.map(Card.fromString)} />
+      <BoardHand
+        hand={hands[player].map(Card.fromString)}
+        name={matchData![player].name!}
+        onPlay={handlePlay}
+        onPass={handlePass}
+        isCurrent={currentPlayer === player}
+        isPlayer
+      />
     </div>
   )
 }
@@ -31,6 +47,7 @@ export default function PusoyDosBoard({
 type OtherHandsProps = {
   hands: {
     player: number
+    name: string
     cards: Card[]
   }[]
   currentPlayer: number
@@ -42,9 +59,9 @@ function OtherHands({ hands, currentPlayer }: OtherHandsProps) {
       {hands.map((hand) => (
         <BoardHand
           key={hand.player}
+          name={hand.name}
           hand={hand.cards}
-          player={hand.player}
-          isCurrent={currentPlayer === 0}
+          isCurrent={currentPlayer === hand.player}
         />
       ))}
     </>
@@ -52,41 +69,58 @@ function OtherHands({ hands, currentPlayer }: OtherHandsProps) {
 }
 
 type BoardHandProps = {
+  name: string
   hand: Card[]
-  player: number
+  onPlay?: (cards: Card[]) => void
+  onPass?: () => void
   isCurrent?: boolean
   isPlayer?: boolean
-  moves?: any
 }
 
 function BoardHand({
   hand,
-  player,
+  name,
+  onPlay,
+  onPass,
   isCurrent,
   isPlayer,
-  moves,
 }: BoardHandProps) {
   const classNames = [styles.hand]
   isCurrent && classNames.push(styles.handCurrent)
   isPlayer && classNames.push(styles.handPlayer)
+  const canPlay = isCurrent && isPlayer
   const [cards, setCards] = useState<Card[]>([])
   function handleCardSelect(card: Card) {
+    if (!canPlay) {
+      return
+    }
     setCards([...cards, card])
   }
   function handlePlay() {
-    moves.play(new Play(cards, player))
+    if (!canPlay || !onPlay) {
+      return
+    }
+    onPlay(cards)
     setCards([])
   }
   function handlePass() {
-    moves.pass()
+    if (!canPlay || !onPass) {
+      return
+    }
+    onPass()
     setCards([])
   }
+  const actions = canPlay ? (
+    <div>
+      <button onClick={handlePlay}>Play</button>
+      <button onClick={handlePass}>Pass</button>
+    </div>
+  ) : null
   return (
     <div className={classNames.join(' ')}>
       <h2>
-        PLAYER {player + 1}
-        <Button onClick={handlePlay}>Play</Button>
-        <Button onClick={handlePass}>Pass</Button>
+        {name}
+        {actions}
       </h2>
       {hand.map((card) => (
         <BoardCard
@@ -136,10 +170,4 @@ function Mat({ cards }: MatProps) {
       ))}
     </div>
   )
-}
-
-type ButtonProps = React.ButtonHTMLAttributes<{}>
-
-function Button(props: ButtonProps) {
-  return <button className={styles.button} {...props} />
 }

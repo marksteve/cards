@@ -4,11 +4,14 @@ import PusoyDosBoard from './Board'
 import { PusoyDos } from './Game'
 
 const App = () => (
-  <Lobby
-    gameServer={`http://${window.location.hostname}:8000`}
-    lobbyServer={`http://${window.location.hostname}:8000`}
-    gameComponents={[{ game: PusoyDos, board: PusoyDosBoard }]}
-  />
+  <>
+    <h1>DOS</h1>
+    <Lobby
+      gameServer={process.env.REACT_APP_GAME_SERVER}
+      lobbyServer={process.env.REACT_APP_LOBBY_SERVER}
+      gameComponents={[{ game: PusoyDos, board: PusoyDosBoard }]}
+    />
+  </>
 )
 
 export default App

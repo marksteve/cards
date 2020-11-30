@@ -1,0 +1,1 @@
+export const toInt = (playerID: string | null) => parseInt(String(playerID), 10)

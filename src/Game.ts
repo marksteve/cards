@@ -1,6 +1,7 @@
 import { Ctx, Game } from 'boardgame.io'
 import { INVALID_MOVE } from 'boardgame.io/core'
 import { ascending } from 'd3-array'
+import { toInt } from './utils'
 
 const RANKS = '3456789TJQKA2'
 const SUITS = 'CSHD'
@@ -13,6 +14,8 @@ enum Combi {
   Quadro,
   StraightFlush,
 }
+
+type CardStr = string
 
 export class Card {
   rank: string
@@ -38,10 +41,6 @@ export class Card {
   static fromString(s: string) {
     const [rank, suit] = s.split('')
     return new Card(rank, suit)
-  }
-
-  static fromState(card: any) {
-    return new Card(card.rank, card.suit)
   }
 
   static newDeck() {
@@ -185,20 +184,17 @@ export class Play {
     return this.cards.map((c) => `${c.rank}${c.suit}`).join(' ')
   }
 
-  static fromString(s: string) {
-    return new Play(s.split(/\s+/).map((c) => Card.fromString(c)))
-  }
-
-  static fromState(cards: any[]) {
-    return cards.map((c) => new Card(c.rank, c.suit))
+  static fromString(s: CardStr | CardStr[], player?: number) {
+    const cards = typeof s === 'string' ? s.split(/\s+/) : s
+    return new Play(cards.map(Card.fromString), player)
   }
 }
 
 export type State = {
-  hands: Record<number, Card[]>
+  hands: Record<number, CardStr[]>
   firstTurn: number
   hasStarted: boolean
-  discardPile: Card[]
+  discardPile: CardStr[]
   lastPlay: Play | null
   winners: number[]
 }
@@ -210,7 +206,7 @@ export const PusoyDos: Game = {
 
   setup: (ctx): State => {
     const deck = ctx.random!.Shuffle(Card.newDeck())
-    const hands: Record<number, Card[]> = {}
+    const hands: Record<number, CardStr[]> = {}
 
     // Deal cards
     let firstTurn = 0
@@ -221,7 +217,7 @@ export const PusoyDos: Game = {
       if (hand.some((c) => c.value === Card.lowest.value)) {
         firstTurn = player
       }
-      hands[player] = hand
+      hands[player] = hand.map(String)
     }
 
     return {
@@ -243,25 +239,24 @@ export const PusoyDos: Game = {
   },
 
   moves: {
-    play: (G: State, ctx: Ctx, play: Play) => {
-      const hand = G.hands[parseInt(ctx.currentPlayer, 10)]
-      const handString = hand.map(String)
+    play: (G: State, ctx: Ctx, cards: CardStr[]) => {
+      const hand = G.hands[toInt(ctx.currentPlayer)]
+      const play = Play.fromString(cards, toInt(ctx.currentPlayer))
+      const playString = play.cards.map(String)
       const playValue = play.value
 
       if (playValue === null) {
         return INVALID_MOVE
       }
 
-      if (!play.cards.every((c) => handString.includes(String(c)))) {
-        console.log('Play not from hand')
+      if (!playString.every((c) => hand.includes(c))) {
+        console.log('Play not from hand', { hand, play })
         return INVALID_MOVE
       }
 
       if (G.lastPlay === null) {
         if (!G.hasStarted) {
-          const isLowestInPlay = play.cards
-            .map(String)
-            .includes(String(Card.lowest))
+          const isLowestInPlay = playString.includes(String(Card.lowest))
           if (!isLowestInPlay) {
             console.log(`First move not ${Card.lowest}`)
             return INVALID_MOVE
@@ -281,15 +276,15 @@ export const PusoyDos: Game = {
       }
 
       // Remove played cards from hand and place in discard pile
-      const discard = play.cards.map((card) => {
-        return hand.splice(hand.map(String).indexOf(String(card)), 1).pop()!
+      const discard = playString.map((card) => {
+        return hand.splice(hand.indexOf(card), 1).pop()!
       })
       G.discardPile.push(...discard)
 
       G.lastPlay = play
 
       if (hand.length === 0) {
-        G.winners.push(parseInt(ctx.currentPlayer, 10))
+        G.winners.push(toInt(ctx.currentPlayer))
         G.lastPlay = null
       }
 
