@@ -10,16 +10,18 @@ export default function PusoyDosBoard({
   moves,
   playerID,
   matchData,
+  reset,
 }: BoardProps<State>) {
   const { hands, discardPile } = G
   const currentPlayer = toInt(ctx.currentPlayer)
   const player = toInt(playerID)
+  const playerName = (p: number) => matchData![p].name!
   const otherHands = Object.keys(hands)
     .map(toInt)
     .filter((p) => p !== player)
     .map((p) => ({
       player: p,
-      name: matchData![p].name!,
+      name: playerName(p),
       cards: hands[p].map(Card.fromString),
     }))
   function handlePlay(cards: Card[]) {
@@ -39,6 +41,11 @@ export default function PusoyDosBoard({
         onPass={handlePass}
         isCurrent={currentPlayer === player}
         isPlayer
+      />
+      <GameOver
+        gameover={ctx.gameover}
+        winners={G.winners.map(playerName)}
+        onReset={reset}
       />
     </div>
   )
@@ -168,6 +175,31 @@ function Mat({ cards }: MatProps) {
           isActive={cards.map(String).includes(String(card))}
         />
       ))}
+    </div>
+  )
+}
+
+type GameOverProps = {
+  gameover: boolean
+  winners: string[]
+  onReset: () => void
+}
+
+function GameOver({ gameover, winners, onReset }: GameOverProps) {
+  if (!gameover) {
+    return null
+  }
+  return (
+    <div className={styles.gameover}>
+      <div className="dialog">
+        <h2>Good Game!</h2>
+        <ol className={styles.winners}>
+          {winners.map((name) => (
+            <li key={name}>{name}</li>
+          ))}
+        </ol>
+        <button onClick={onReset}>Play Again</button>
+      </div>
     </div>
   )
 }

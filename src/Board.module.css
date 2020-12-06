@@ -48,3 +48,38 @@
 .mat > img {
   width: calc(100% / 15);
 }
+
+.gameover {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.winners {
+  list-style: none;
+  padding-left: 0;
+  counter-reset: winners;
+}
+
+.winners li {
+  counter-increment: winners;
+  line-height: 1.5;
+}
+
+.winners li:before {
+  content: counter(winners);
+  background: var(--accent);
+  width: 1em;
+  line-height: 1em;
+  text-align: center;
+  border-radius: 50%;
+  display: inline-block; 
+  margin-right: 0.5em;
+  border: 3px solid;
+}

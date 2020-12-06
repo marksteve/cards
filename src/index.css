@@ -18,6 +18,15 @@ body {
   margin: 0;
 }
 
+h1,
+h2,
+h3,
+p,
+ul,
+ol {
+  margin: 0 0 0.5em;
+}
+
 h1 {
   font-size: 2rem;
   line-height: 1;
@@ -26,7 +35,9 @@ h1 {
   padding: 1rem 1rem 0;
 }
 
-button, select, input[type=text] {
+button,
+select,
+input[type='text'] {
   font: inherit;
   border: 3px solid;
   border-radius: 3px;
@@ -34,6 +45,22 @@ button, select, input[type=text] {
 
 button {
   background: var(--accent);
+  cursor: pointer;
+}
+
+button:hover {
+  transform: rotate(-3deg);
+}
+
+button:active {
+  transform: rotate(-3deg) translateY(1px);
+}
+
+.dialog {
+  border: 3px solid;
+  border-radius: 3px;
+  padding: 3rem;
+  background: white;
 }
 
 /* Lobby */
@@ -63,7 +90,8 @@ button {
   border-radius: 3px;
 }
 
-.phase > p, .phase > div {
+.phase > p,
+.phase > div {
   padding: 1rem;
   margin: 0;
 }
