@@ -12,7 +12,7 @@ export default function PusoyDosBoard({
   matchData,
   reset,
 }: BoardProps<State>) {
-  const { hands, discardPile } = G
+  const { hands, discarded } = G
   const currentPlayer = toInt(ctx.currentPlayer)
   const player = toInt(playerID)
   const playerName = (p: number) => matchData![p].name!
@@ -33,7 +33,7 @@ export default function PusoyDosBoard({
   return (
     <div className={styles.board}>
       <OtherHands hands={otherHands} currentPlayer={currentPlayer} />
-      <Mat cards={discardPile.map(Card.fromString)} />
+      <Mat discarded={discarded.map((cards) => cards.map(Card.fromString))} />
       <BoardHand
         hand={hands[player].map(Card.fromString)}
         name={matchData![player].name!}
@@ -162,18 +162,28 @@ function BoardCard({ card, onCardSelect, isActive }: BoardCardProps) {
 }
 
 type MatProps = {
+  discarded: Card[][]
+}
+
+function Mat({ discarded }: MatProps) {
+  return (
+    <div className={styles.mat}>
+      {discarded.map((cards, i) => (
+        <Play key={i} cards={cards} />
+      ))}
+    </div>
+  )
+}
+
+type PlayProps = {
   cards: Card[]
 }
 
-function Mat({ cards }: MatProps) {
+function Play({ cards }: PlayProps) {
   return (
-    <div className={styles.mat}>
+    <div className={styles.play}>
       {cards.map((card) => (
-        <BoardCard
-          key={String(card)}
-          card={card}
-          isActive={cards.map(String).includes(String(card))}
-        />
+        <BoardCard key={String(card)} card={card} />
       ))}
     </div>
   )

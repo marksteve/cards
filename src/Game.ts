@@ -194,7 +194,7 @@ export type State = {
   hands: Record<number, CardStr[]>
   firstTurn: number
   hasStarted: boolean
-  discardPile: CardStr[]
+  discarded: CardStr[][]
   lastPlay: Play | null
   winners: number[]
 }
@@ -224,7 +224,7 @@ export const PusoyDos: Game = {
       hands,
       firstTurn,
       hasStarted: false,
-      discardPile: [],
+      discarded: [],
       lastPlay: null,
       winners: [],
     }
@@ -279,7 +279,7 @@ export const PusoyDos: Game = {
       const discard = playString.map((card) => {
         return hand.splice(hand.indexOf(card), 1).pop()!
       })
-      G.discardPile.push(...discard)
+      G.discarded.push(discard)
 
       G.lastPlay = play
 

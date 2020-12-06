@@ -39,14 +39,23 @@
 
 .mat {
   grid-column: 1 / -1;
+  position: relative;
+}
+
+.play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  transform: translate(-50%, -50%);
   display: flex;
   justify-content: center;
   align-items: center;
-  flex-wrap: wrap;
 }
 
-.mat > img {
+.play > img {
   width: calc(100% / 15);
+  transform-origin: 0% 100%;
 }
 
 .gameover {
