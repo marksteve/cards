@@ -12,17 +12,17 @@ export default function PusoyDosBoard({
   matchData,
   reset,
 }: BoardProps<State>) {
-  const { hands, discarded } = G
+  const { players, remaining, discarded } = G
   const currentPlayer = toInt(ctx.currentPlayer)
   const player = toInt(playerID)
   const playerName = (p: number) => matchData![p].name!
-  const otherHands = Object.keys(hands)
+  const otherHands = Object.keys(remaining)
     .map(toInt)
     .filter((p) => p !== player)
-    .map((p) => ({
+    .map((p, i) => ({
       player: p,
       name: playerName(p),
-      cards: hands[p].map(Card.fromString),
+      cards: Array(remaining[p]).fill('B1'),
     }))
   function handlePlay(cards: Card[]) {
     moves.play(cards.map(String))
@@ -35,7 +35,7 @@ export default function PusoyDosBoard({
       <OtherHands hands={otherHands} currentPlayer={currentPlayer} />
       <Mat discarded={discarded.map((cards) => cards.map(Card.fromString))} />
       <BoardHand
-        hand={hands[player].map(Card.fromString)}
+        hand={players[player].map(Card.fromString)}
         name={matchData![player].name!}
         onPlay={handlePlay}
         onPass={handlePass}

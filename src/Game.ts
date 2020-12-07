@@ -1,4 +1,5 @@
 import { Ctx, Game } from 'boardgame.io'
+import { PlayerView } from 'boardgame.io/core'
 import { INVALID_MOVE } from 'boardgame.io/core'
 import { ascending } from 'd3-array'
 import { toInt } from './utils'
@@ -191,7 +192,8 @@ export class Play {
 }
 
 export type State = {
-  hands: Record<number, CardStr[]>
+  players: Record<number, CardStr[]>
+  remaining: Record<number, number>
   firstTurn: number
   hasStarted: boolean
   discarded: CardStr[][]
@@ -203,25 +205,29 @@ export const PusoyDos: Game = {
   name: 'pusoy-dos',
   minPlayers: 4,
   maxPlayers: 4,
+  playerView: PlayerView.STRIP_SECRETS,
 
   setup: (ctx): State => {
     const deck = ctx.random!.Shuffle(Card.newDeck())
-    const hands: Record<number, CardStr[]> = {}
+    const players: Record<number, CardStr[]> = {}
+    const remaining: Record<number, number> = {}
 
     // Deal cards
     let firstTurn = 0
     let player = 0
     while (deck.length > 0) {
-      player = Object.keys(hands).length
+      player = Object.keys(players).length
       const hand = deck.splice(0, 13)
       if (hand.some((c) => c.value === Card.lowest.value)) {
         firstTurn = player
       }
-      hands[player] = hand.map(String)
+      players[player] = hand.map(String)
+      remaining[player] = hand.length
     }
 
     return {
-      hands,
+      players,
+      remaining,
       firstTurn,
       hasStarted: false,
       discarded: [],
@@ -239,66 +245,74 @@ export const PusoyDos: Game = {
   },
 
   moves: {
-    play: (G: State, ctx: Ctx, cards: CardStr[]) => {
-      const hand = G.hands[toInt(ctx.currentPlayer)]
-      const play = Play.fromString(cards, toInt(ctx.currentPlayer))
-      const playString = play.cards.map(String)
-      const playValue = play.value
+    play: {
+      move: (G: State, ctx: Ctx, cards: CardStr[]) => {
+        const hand = G.players[toInt(ctx.currentPlayer)]
+        const play = Play.fromString(cards, toInt(ctx.currentPlayer))
+        const playString = play.cards.map(String)
+        const playValue = play.value
 
-      if (playValue === null) {
-        return INVALID_MOVE
-      }
+        if (playValue === null) {
+          return INVALID_MOVE
+        }
 
-      if (!playString.every((c) => hand.includes(c))) {
-        console.log('Play not from hand', { hand, play })
-        return INVALID_MOVE
-      }
+        if (!playString.every((c) => hand.includes(c))) {
+          console.log('Play not from hand', { hand, play })
+          return INVALID_MOVE
+        }
 
-      if (G.lastPlay === null) {
-        if (!G.hasStarted) {
-          const isLowestInPlay = playString.includes(String(Card.lowest))
-          if (!isLowestInPlay) {
-            console.log(`First move not ${Card.lowest}`)
+        if (G.lastPlay === null) {
+          if (!G.hasStarted) {
+            const isLowestInPlay = playString.includes(String(Card.lowest))
+            if (!isLowestInPlay) {
+              console.log(`First move not ${Card.lowest}`)
+              return INVALID_MOVE
+            } else {
+              G.hasStarted = true
+            }
+          }
+        } else {
+          if (G.lastPlay?.cards.length !== play.cards.length) {
+            console.log('Play not same length as last play')
             return INVALID_MOVE
-          } else {
-            G.hasStarted = true
+          }
+          if (playValue < G.lastPlay.value!) {
+            console.log('Play value lower that last play')
+            return INVALID_MOVE
           }
         }
-      } else {
-        if (G.lastPlay?.cards.length !== play.cards.length) {
-          console.log('Play not same length as last play')
-          return INVALID_MOVE
+
+        // Remove played cards from hand and place in discard pile
+        const discard = playString.map((card) => {
+          return hand.splice(hand.indexOf(card), 1).pop()!
+        })
+        G.discarded.push(discard)
+
+        G.lastPlay = play
+
+        if (hand.length === 0) {
+          G.winners.push(toInt(ctx.currentPlayer))
+          G.lastPlay = null
         }
-        if (playValue < G.lastPlay.value!) {
-          console.log('Play value lower that last play')
-          return INVALID_MOVE
-        }
-      }
 
-      // Remove played cards from hand and place in discard pile
-      const discard = playString.map((card) => {
-        return hand.splice(hand.indexOf(card), 1).pop()!
-      })
-      G.discarded.push(discard)
+        G.remaining[toInt(ctx.currentPlayer)] = hand.length
 
-      G.lastPlay = play
-
-      if (hand.length === 0) {
-        G.winners.push(toInt(ctx.currentPlayer))
-        G.lastPlay = null
-      }
-
-      ctx.events?.endTurn!()
+        ctx.events?.endTurn!()
+      },
+      client: false,
     },
-    pass: (G, ctx) => {
-      if (G.lastPlay === null) {
-        return INVALID_MOVE
-      }
-      if (G.lastPlay?.player === getNext(G, ctx)) {
-        // Others passed
-        G.lastPlay = null
-      }
-      ctx.events?.endTurn!()
+    pass: {
+      move: (G, ctx) => {
+        if (G.lastPlay === null) {
+          return INVALID_MOVE
+        }
+        if (G.lastPlay?.player === getNext(G, ctx)) {
+          // Others passed
+          G.lastPlay = null
+        }
+        ctx.events?.endTurn!()
+      },
+      client: false,
     },
   },
 
