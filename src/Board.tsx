@@ -118,7 +118,7 @@ function BoardHand({
     setCards([])
   }
   const actions = canPlay ? (
-    <div>
+    <div className={styles.actions}>
       <button onClick={handlePlay}>Play</button>
       <button onClick={handlePass}>Pass</button>
     </div>

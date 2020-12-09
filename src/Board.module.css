@@ -1,4 +1,5 @@
 .board {
+  min-height: 100vh;
   padding: 1rem;
   background: var(--green-2);
   position: relative;
@@ -35,6 +36,12 @@
 
 .handCurrent {
   background: var(--green-1);
+  border: 3px solid var(--green-3);
+  border-radius: 3px;
+}
+
+.actions > button {
+  margin: 0 0.5rem;
 }
 
 .mat {

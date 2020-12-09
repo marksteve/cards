@@ -1,11 +1,11 @@
-import { useLocalStorage } from '@rehooks/local-storage'
-import { LobbyAPI } from 'boardgame.io'
+import { useLocalStorage, writeStorage } from '@rehooks/local-storage'
+import { LobbyAPI, Server } from 'boardgame.io'
 import { LobbyClient } from 'boardgame.io/client'
 import { SocketIO } from 'boardgame.io/multiplayer'
 import { Client } from 'boardgame.io/react'
 import firebase from 'firebase/app'
 import 'firebase/firestore'
-import React, { ChangeEvent, useEffect, useMemo } from 'react'
+import React, { ChangeEvent, useEffect, useMemo, useState } from 'react'
 import { useDocumentData } from 'react-firebase-hooks/firestore'
 import PusoyDosBoard from './Board'
 import { PusoyDos } from './Game'
@@ -30,10 +30,35 @@ export default function Lobby() {
     () => new LobbyClient({ server: process.env.REACT_APP_LOBBY_SERVER }),
     []
   )
+  const [playerName, setPlayerName] = useState<string>('')
+
+  if (matchID) {
+    return <MatchLobby matchID={matchID} lobbyClient={lobbyClient} />
+  }
+
+  function handleNameChange(e: ChangeEvent<HTMLInputElement>) {
+    setPlayerName(e.target.value.trim())
+  }
 
   async function handleCreate() {
+    if (playerName.length < 1) {
+      return
+    }
     const { matchID } = await lobbyClient.createMatch(GAME_ID, {
       numPlayers: NUM_PLAYERS,
+    })
+    const { playerCredentials } = await lobbyClient.joinMatch(
+      GAME_ID,
+      matchID,
+      {
+        playerID: '0',
+        playerName,
+      }
+    )
+    writeStorage(matchID, {
+      id: '0',
+      name: playerName,
+      credentials: playerCredentials,
     })
     await firebase.firestore().collection('matches').doc(matchID).set({
       players: [],
@@ -43,21 +68,28 @@ export default function Lobby() {
 
   return (
     <div className={styles.lobby}>
-      {matchID ? (
-        <Match matchID={matchID} lobbyClient={lobbyClient} />
-      ) : (
-        <button onClick={handleCreate}>Create Game</button>
-      )}
+      <div className="dialog">
+        <h1>DOS</h1>
+        <p>Play Pusoy Dos online. That's it.</p>
+        <div className={styles.inputCombo}>
+          <input
+            type="text"
+            onChange={handleNameChange}
+            placeholder="Your name"
+          />
+          <button onClick={handleCreate}>Create a Game</button>
+        </div>
+      </div>
     </div>
   )
 }
 
-type MatchProps = {
+type MatchLobbyProps = {
   matchID: string
   lobbyClient: LobbyClient
 }
 
-function Match({ matchID, lobbyClient }: MatchProps) {
+function MatchLobby({ matchID, lobbyClient }: MatchLobbyProps) {
   const matchRef = firebase.firestore().doc(`matches/${matchID}`)
   const [match] = useDocumentData<LobbyAPI.Match>(matchRef)
   const [player, setPlayer] = useLocalStorage<Record<string, string>>(matchID, {
@@ -79,57 +111,65 @@ function Match({ matchID, lobbyClient }: MatchProps) {
   }
 
   function handleNameChange(e: ChangeEvent<HTMLInputElement>) {
-    setPlayer({ ...player, name: e.target.value })
+    setPlayer({ ...player, name: e.target.value.trim() })
   }
 
-  function handleJoin() {
+  async function handleJoin() {
     if (player.name === '') {
       return
     }
     for (const { id, name } of match?.players || []) {
       if (!name) {
-        lobbyClient
-          .joinMatch(GAME_ID, matchID, {
+        const { playerCredentials } = await lobbyClient.joinMatch(
+          GAME_ID,
+          matchID,
+          {
             playerID: `${id}`,
             playerName: player.name,
-          })
-          .then(({ playerCredentials }) => {
-            setPlayer({
-              ...player,
-              id: `${id}`,
-              credentials: playerCredentials,
-            })
-            updateMatch()
-          })
+          }
+        )
+        setPlayer({
+          ...player,
+          id: `${id}`,
+          credentials: playerCredentials,
+        })
+        updateMatch()
         break
       }
     }
   }
 
-  let content = null
   if (match.players.every((player) => player.name)) {
-    content = (
+    return (
       <Game
         matchID={matchID}
         playerID={player.id}
         credentials={player.credentials}
       />
     )
-  } else if (player.credentials.length) {
-    content = (
-      <div className={styles.players}>{JSON.stringify(match.players)}</div>
-    )
-  } else {
-    content = (
-      <>
-        {JSON.stringify(match.players)}
-        <input type="text" onChange={handleNameChange} value={player.name} />
-        <button onClick={handleJoin}>Join Game</button>
-      </>
-    )
   }
 
-  return <div className={styles.match}>{content}</div>
+  return (
+    <div className={styles.lobby}>
+      <div className="dialog">
+        <h1>DOS</h1>
+        <MatchPlayers players={match.players} />
+        {player.credentials.length > 0 ? (
+          <p>Waiting for more players&hellip;</p>
+        ) : (
+          <div className={styles.inputCombo}>
+            <input
+              type="text"
+              onChange={handleNameChange}
+              value={player.name}
+              placeholder="Your name"
+            />
+            <button onClick={handleJoin}>Join Game</button>
+          </div>
+        )}
+      </div>
+    </div>
+  )
 }
 
 const Game = Client({
@@ -139,3 +179,20 @@ const Game = Client({
   multiplayer: SocketIO({ server: process.env.REACT_APP_GAME_SERVER }),
   debug: false,
 })
+
+type MatchPlayersProps = {
+  players: Server.PlayerMetadata[]
+}
+
+function MatchPlayers({ players }: MatchPlayersProps) {
+  return (
+    <div className={styles.matchPlayers}>
+      <h2>Players</h2>
+      {players
+        .filter((player) => player.name)
+        .map((player) => (
+          <div className={styles.matchPlayer}>{player.name}</div>
+        ))}
+    </div>
+  )
+}

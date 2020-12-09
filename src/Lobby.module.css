@@ -1,3 +1,42 @@
 .lobby {
-  
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;  
+  align-items: center;
+  flex-direction: column;
+}
+
+.lobby h1 {
+  background: url(./dos-logo.png) no-repeat left center;
+  padding-left: 3rem;
+  background-size: 2rem;
+}
+
+.lobby > div {
+  min-width: 50rem;
+}
+
+.inputCombo {
+  display: flex;
+}
+
+.inputCombo > input {
+  flex: 2;
+  margin-right: 0.5rem;
+}
+
+.inputCombo > button {
+  flex: 1;
+}
+
+.matchPlayers {
+  display: flex;
+  align-items: center;
+}
+
+.matchPlayer {
+  border: 3px solid;
+  border-radius: 3px;
+  padding: 0 0.5rem;
+  margin-left: 0.5rem;
 }

@@ -24,21 +24,14 @@ h3,
 p,
 ul,
 ol {
-  margin: 0 0 0.5em;
-}
-
-h1 {
-  font-size: 2rem;
-  line-height: 1;
-  color: white;
-  margin: 0;
-  padding: 1rem 1rem 0;
+  margin: 0 0 0.5rem;
 }
 
 button,
 select,
 input[type='text'] {
   font: inherit;
+  line-height: 1;
   border: 3px solid;
   border-radius: 3px;
 }
@@ -61,59 +54,4 @@ button:active {
   border-radius: 3px;
   padding: 3rem;
   background: white;
-}
-
-/* Lobby */
-
-#lobby-view {
-  padding: 1rem !important;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  align-items: center;
-  min-height: 100vh;
-}
-
-#lobby-exit {
-  margin-top: 1rem;
-}
-
-.hidden {
-  display: none;
-}
-
-.phase {
-  display: flex;
-  flex-direction: column;
-  background: white;
-  border: 3px solid;
-  border-radius: 3px;
-}
-
-.phase > p,
-.phase > div {
-  padding: 1rem;
-  margin: 0;
-}
-
-.phase > .bgio-client {
-  padding: 0;
-}
-
-#match-creation select {
-  margin-right: 1rem;
-}
-
-#instances table {
-  width: 100%;
-}
-
-#instances table td div {
-  display: flex;
-  justify-content: space-around;
-}
-
-#match-exit {
-  background: var(--green-2);
-  text-align: center;
 }

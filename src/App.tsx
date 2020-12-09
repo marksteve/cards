@@ -2,12 +2,7 @@ import React from 'react'
 import Lobby from './Lobby'
 
 const App = () => {
-  return (
-    <>
-      <h1>DOS</h1>
-      <Lobby />
-    </>
-  )
+  return <Lobby />
 }
 
 export default App
