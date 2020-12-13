@@ -4,26 +4,12 @@ import { LobbyClient } from 'boardgame.io/client'
 import { SocketIO } from 'boardgame.io/multiplayer'
 import { Client } from 'boardgame.io/react'
 import firebase from 'firebase/app'
-import 'firebase/firestore'
 import React, { ChangeEvent, useEffect, useMemo, useState } from 'react'
 import { useDocumentData } from 'react-firebase-hooks/firestore'
 import PusoyDosBoard from './Board'
 import Button from './Button'
-import { PusoyDos } from './Game'
+import { GAME_ID, NUM_PLAYERS, PusoyDos } from './Game'
 import styles from './Lobby.module.css'
-
-const GAME_ID = 'pusoy-dos'
-const NUM_PLAYERS = 4
-const firebaseConfig = {
-  apiKey: 'AIzaSyCUS1V4vpUDVVwbBFJcyf5twLVLfQEutUQ',
-  authDomain: 'playground-163312.firebaseapp.com',
-  databaseURL: 'https://playground-163312.firebaseio.com',
-  projectId: 'playground-163312',
-  storageBucket: 'playground-163312.appspot.com',
-  messagingSenderId: '908109866828',
-  appId: '1:908109866828:web:64e3cd0a0058ccdd9e51e9',
-}
-firebase.initializeApp(firebaseConfig)
 
 export default function Lobby() {
   const matchID = window.location.pathname.replace(/\//g, '')
@@ -106,6 +92,12 @@ function MatchLobby({ matchID, lobbyClient }: MatchLobbyProps) {
   }
 
   useEffect(updateMatch, [])
+
+  useEffect(() => {
+    if (match?.nextMatchID) {
+      window.location.href = `/${match.nextMatchID}`
+    }
+  }, [match])
 
   if (!match) {
     return null

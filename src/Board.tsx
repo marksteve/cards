@@ -1,11 +1,13 @@
+import { LobbyClient } from 'boardgame.io/client'
 import { BoardProps } from 'boardgame.io/react'
 import { range } from 'd3-array'
+import firebase from 'firebase/app'
 import React from 'react'
 import styles from './Board.module.css'
 import BoardCard from './BoardCard'
 import BoardHand from './BoardHand'
 import Button from './Button'
-import { Card, State } from './Game'
+import { Card, GAME_ID, State } from './Game'
 import { toInt } from './utils'
 
 export default function PusoyDosBoard({
@@ -13,8 +15,9 @@ export default function PusoyDosBoard({
   ctx,
   moves,
   playerID,
+  credentials,
   matchData,
-  reset,
+  matchID,
 }: BoardProps<State>) {
   const { players, remaining, discarded } = G
 
@@ -39,6 +42,18 @@ export default function PusoyDosBoard({
     moves.pass()
   }
 
+  async function handlePlayAgain() {
+    const lobbyClient = new LobbyClient({
+      server: process.env.REACT_APP_LOBBY_SERVER,
+    })
+    const { nextMatchID } = await lobbyClient.playAgain(GAME_ID, matchID, {
+      playerID: playerID!,
+      credentials: credentials!,
+    })
+    const matchRef = firebase.firestore().doc(`matches/${matchID}`)
+    matchRef.set({ nextMatchID }, { merge: true })
+  }
+
   return (
     <div className={styles.board}>
       <OtherHands hands={otherHands} currentPlayer={currentPlayer} />
@@ -54,7 +69,7 @@ export default function PusoyDosBoard({
       <GameOver
         gameover={ctx.gameover}
         winners={G.winners.map(playerName)}
-        onReset={reset}
+        onPlayAgain={handlePlayAgain}
       />
     </div>
   )
@@ -124,10 +139,10 @@ function Play({ cards, isActive }: PlayProps) {
 type GameOverProps = {
   gameover: boolean
   winners: string[]
-  onReset: () => void
+  onPlayAgain: () => void
 }
 
-function GameOver({ gameover, winners, onReset }: GameOverProps) {
+function GameOver({ gameover, winners, onPlayAgain }: GameOverProps) {
   if (!gameover) {
     return null
   }
@@ -140,7 +155,7 @@ function GameOver({ gameover, winners, onReset }: GameOverProps) {
             <li key={name}>{name}</li>
           ))}
         </ol>
-        <Button onClick={onReset}>Play Again</Button>
+        <Button onClick={onPlayAgain}>Play Again</Button>
       </div>
     </div>
   )

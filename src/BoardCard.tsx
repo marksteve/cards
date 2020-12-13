@@ -46,7 +46,7 @@ export default function BoardCard({
     )
   }
 
-  const [provided, snapshot] = draggable
+  const [provided] = draggable
 
   return (
     <div

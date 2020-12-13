@@ -1,8 +1,10 @@
 import { Ctx, Game } from 'boardgame.io'
-import { PlayerView } from 'boardgame.io/core'
-import { INVALID_MOVE } from 'boardgame.io/core'
+import { INVALID_MOVE, PlayerView } from 'boardgame.io/core'
 import { ascending } from 'd3-array'
 import { toInt } from './utils'
+
+export const GAME_ID = 'pusoy-dos'
+export const NUM_PLAYERS = 4
 
 const RANKS = '3456789TJQKA2'
 const SUITS = 'CSHD'
@@ -202,9 +204,9 @@ export type State = {
 }
 
 export const PusoyDos: Game = {
-  name: 'pusoy-dos',
-  minPlayers: 4,
-  maxPlayers: 4,
+  name: GAME_ID,
+  minPlayers: NUM_PLAYERS,
+  maxPlayers: NUM_PLAYERS,
   playerView: PlayerView.STRIP_SECRETS,
 
   setup: (ctx): State => {
