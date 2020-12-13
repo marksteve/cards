@@ -1,4 +1,5 @@
 import { BoardProps } from 'boardgame.io/react'
+import { range } from 'd3-array'
 import React, { useCallback, useState } from 'react'
 import styles from './Board.module.css'
 import Button from './Button'
@@ -14,23 +15,28 @@ export default function PusoyDosBoard({
   reset,
 }: BoardProps<State>) {
   const { players, remaining, discarded } = G
+
   const currentPlayer = toInt(ctx.currentPlayer)
   const player = toInt(playerID)
   const playerName = (p: number) => matchData![p].name!
-  const otherHands = Object.keys(remaining)
-    .map(toInt)
+
+  const start = (player + 1) % ctx.numPlayers
+  const otherHands = range(start, (start + ctx.numPlayers - 1) % ctx.numPlayers)
     .filter((p) => p !== player)
     .map((p, i) => ({
       player: p,
       name: playerName(p),
       cards: Array(remaining[p]).fill('B1'),
     }))
+
   function handlePlay(cards: Card[]) {
     moves.play(cards.map(String))
   }
+
   function handlePass() {
     moves.pass()
   }
+
   return (
     <div className={styles.board}>
       <OtherHands hands={otherHands} currentPlayer={currentPlayer} />
