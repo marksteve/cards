@@ -1,7 +1,9 @@
 import { BoardProps } from 'boardgame.io/react'
 import { range } from 'd3-array'
-import React, { useCallback, useState } from 'react'
+import React from 'react'
 import styles from './Board.module.css'
+import BoardCard from './BoardCard'
+import BoardHand from './BoardHand'
 import Button from './Button'
 import { Card, State } from './Game'
 import { toInt } from './utils'
@@ -21,8 +23,8 @@ export default function PusoyDosBoard({
   const playerName = (p: number) => matchData![p].name!
 
   const start = (player + 1) % ctx.numPlayers
-  const otherHands = range(start, (start + ctx.numPlayers - 1) % ctx.numPlayers)
-    .filter((p) => p !== player)
+  const otherHands = range(start, start + ctx.numPlayers - 1)
+    .map((p) => p % ctx.numPlayers)
     .map((p, i) => ({
       player: p,
       name: playerName(p),
@@ -42,7 +44,7 @@ export default function PusoyDosBoard({
       <OtherHands hands={otherHands} currentPlayer={currentPlayer} />
       <Mat discarded={discarded.map((cards) => cards.map(Card.fromString))} />
       <BoardHand
-        hand={players[player].map(Card.fromString)}
+        cards={players[player].map(Card.fromString)}
         name={matchData![player].name!}
         onPlay={handlePlay}
         onPass={handlePass}
@@ -74,97 +76,11 @@ function OtherHands({ hands, currentPlayer }: OtherHandsProps) {
         <BoardHand
           key={hand.player}
           name={hand.name}
-          hand={hand.cards}
+          cards={hand.cards}
           isCurrent={currentPlayer === hand.player}
         />
       ))}
     </>
-  )
-}
-
-type BoardHandProps = {
-  name: string
-  hand: Card[]
-  onPlay?: (cards: Card[]) => void
-  onPass?: () => void
-  isCurrent?: boolean
-  isPlayer?: boolean
-}
-
-function BoardHand({
-  hand,
-  name,
-  onPlay,
-  onPass,
-  isCurrent,
-  isPlayer,
-}: BoardHandProps) {
-  const classNames = [styles.hand]
-  isCurrent && classNames.push(styles.handCurrent)
-  isPlayer && classNames.push(styles.handPlayer)
-  const canPlay = isCurrent && isPlayer
-  const [cards, setCards] = useState<Card[]>([])
-  function handleCardSelect(card: Card) {
-    if (!canPlay) {
-      return
-    }
-    setCards([...cards, card])
-  }
-  function handlePlay() {
-    if (!canPlay || !onPlay) {
-      return
-    }
-    onPlay(cards)
-    setCards([])
-  }
-  function handlePass() {
-    if (!canPlay || !onPass) {
-      return
-    }
-    onPass()
-    setCards([])
-  }
-  const actions = canPlay ? (
-    <div className={styles.actions}>
-      <Button onClick={handlePlay}>Play</Button>
-      <Button onClick={handlePass}>Pass</Button>
-    </div>
-  ) : null
-  return (
-    <div className={classNames.join(' ')}>
-      <h2>
-        {name}
-        {actions}
-      </h2>
-      {hand.map((card) => (
-        <BoardCard
-          key={String(card)}
-          card={card}
-          onCardSelect={handleCardSelect}
-          isActive={cards.map(String).includes(String(card))}
-        />
-      ))}
-    </div>
-  )
-}
-
-type BoardCardProps = {
-  card: Card
-  onCardSelect?: (card: Card) => void
-  isActive?: boolean
-}
-
-function BoardCard({ card, onCardSelect, isActive }: BoardCardProps) {
-  const handleClick = useCallback(() => {
-    onCardSelect && onCardSelect(card)
-  }, [card, onCardSelect])
-  return (
-    <img
-      onClick={handleClick}
-      src={`${process.env.PUBLIC_URL}/assets/cards/${card}.png`}
-      alt={String(card)}
-      className={isActive ? styles.handActive : ''}
-    />
   )
 }
 
@@ -176,7 +92,7 @@ function Mat({ discarded }: MatProps) {
   return (
     <div className={styles.mat}>
       {discarded.map((cards, i) => (
-        <Play key={i} cards={cards} />
+        <Play key={i} cards={cards} isActive={i === discarded.length - 1} />
       ))}
     </div>
   )
@@ -184,14 +100,23 @@ function Mat({ discarded }: MatProps) {
 
 type PlayProps = {
   cards: Card[]
+  isActive: boolean
 }
 
-function Play({ cards }: PlayProps) {
+function Play({ cards, isActive }: PlayProps) {
   return (
     <div className={styles.play}>
-      {cards.map((card) => (
-        <BoardCard key={String(card)} card={card} />
-      ))}
+      {cards.map((card, i) => {
+        const rotation = 10 * (i - (cards.length - 1) / 2)
+        return (
+          <BoardCard
+            key={i}
+            card={card}
+            rotation={rotation}
+            isActive={isActive}
+          />
+        )
+      })}
     </div>
   )
 }

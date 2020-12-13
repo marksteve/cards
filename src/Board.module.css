@@ -11,7 +11,7 @@
 .hand {
   grid-column: span 1;
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 }
@@ -19,15 +19,6 @@
 .hand > h2 {
   font-size: 32px;
   text-align: center;
-  width: 100%;
-}
-
-.hand > img {
-  width: calc(100% / 15);
-}
-
-.handActive, .hand > img:hover {
-  transform: translateY(-10%);
 }
 
 .handPlayer {
@@ -44,6 +35,28 @@
   margin: 0 0.5rem;
 }
 
+.handCards {
+  width: 100%;
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-columns: repeat(auto-fill, calc(100% / var(--max-cards)));
+  padding: 1rem;
+}
+
+.handCards > .card {
+  text-align: center;
+}
+
+.handCards > .card > img {
+  width: 90%;
+}
+
+.cardActive > img, .hand > img:hover {
+  box-shadow: 0 0 0 6px var(--accent);
+  background: var(--accent);
+  border-radius: 1px;
+}
+
 .mat {
   grid-column: 1 / -1;
   position: relative;
@@ -55,14 +68,20 @@
   left: 50%;
   width: 100%;
   transform: translate(-50%, -50%);
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
-.play > img {
-  width: calc(100% / 15);
-  transform-origin: 0% 100%;
+.play > .card {
+  width: calc(100% / var(--max-cards));
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform-origin: 50% 200%;
+  transform: translate(-50%, -50%) rotate(var(--rotation));
+  text-align: center;
+}
+
+.play > .card > img {
+  width: 90%;
 }
 
 .gameover {
