@@ -8,6 +8,7 @@ import 'firebase/firestore'
 import React, { ChangeEvent, useEffect, useMemo, useState } from 'react'
 import { useDocumentData } from 'react-firebase-hooks/firestore'
 import PusoyDosBoard from './Board'
+import Button from './Button'
 import { PusoyDos } from './Game'
 import styles from './Lobby.module.css'
 
@@ -77,7 +78,7 @@ export default function Lobby() {
             onChange={handleNameChange}
             placeholder="Your name"
           />
-          <button onClick={handleCreate}>Create a Game</button>
+          <Button onClick={handleCreate}>Create a Game</Button>
         </div>
       </div>
     </div>
@@ -164,7 +165,7 @@ function MatchLobby({ matchID, lobbyClient }: MatchLobbyProps) {
               value={player.name}
               placeholder="Your name"
             />
-            <button onClick={handleJoin}>Join Game</button>
+            <Button onClick={handleJoin}>Join Game</Button>
           </div>
         )}
       </div>

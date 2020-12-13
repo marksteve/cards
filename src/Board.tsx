@@ -1,6 +1,7 @@
 import { BoardProps } from 'boardgame.io/react'
 import React, { useCallback, useState } from 'react'
 import styles from './Board.module.css'
+import Button from './Button'
 import { Card, State } from './Game'
 import { toInt } from './utils'
 
@@ -119,8 +120,8 @@ function BoardHand({
   }
   const actions = canPlay ? (
     <div className={styles.actions}>
-      <button onClick={handlePlay}>Play</button>
-      <button onClick={handlePass}>Pass</button>
+      <Button onClick={handlePlay}>Play</Button>
+      <Button onClick={handlePass}>Pass</Button>
     </div>
   ) : null
   return (
@@ -208,7 +209,7 @@ function GameOver({ gameover, winners, onReset }: GameOverProps) {
             <li key={name}>{name}</li>
           ))}
         </ol>
-        <button onClick={onReset}>Play Again</button>
+        <Button onClick={onReset}>Play Again</Button>
       </div>
     </div>
   )
