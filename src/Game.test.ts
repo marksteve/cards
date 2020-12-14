@@ -2,7 +2,6 @@
 
 import { Play } from './Game'
 
-// const gt = (c1, c2) => Play.fromString(c1).value() > Play.fromString(c2).value()
 const gt = (c1, c2) => {
   return Play.fromString(c1).value > Play.fromString(c2).value
 }

@@ -7,7 +7,7 @@ import styles from './Board.module.css'
 import BoardCard from './BoardCard'
 import BoardHand from './BoardHand'
 import Button from './Button'
-import { Card, GAME_ID, State } from './Game'
+import { CardStr, GAME_ID, State } from './Game'
 import { toInt } from './utils'
 
 export default function PusoyDosBoard({
@@ -34,8 +34,8 @@ export default function PusoyDosBoard({
       cards: Array(remaining[p]).fill('B1'),
     }))
 
-  function handlePlay(cards: Card[]) {
-    moves.play(cards.map(String))
+  function handlePlay(cards: CardStr[]) {
+    moves.play(cards)
   }
 
   function handlePass() {
@@ -57,9 +57,9 @@ export default function PusoyDosBoard({
   return (
     <div className={styles.board}>
       <OtherHands hands={otherHands} currentPlayer={currentPlayer} />
-      <Mat discarded={discarded.map((cards) => cards.map(Card.fromString))} />
+      <Mat discarded={discarded} />
       <BoardHand
-        cards={players[player].map(Card.fromString)}
+        cards={players[player]}
         name={matchData![player].name!}
         onPlay={handlePlay}
         onPass={handlePass}
@@ -79,7 +79,7 @@ type OtherHandsProps = {
   hands: {
     player: number
     name: string
-    cards: Card[]
+    cards: CardStr[]
   }[]
   currentPlayer: number
 }
@@ -100,7 +100,7 @@ function OtherHands({ hands, currentPlayer }: OtherHandsProps) {
 }
 
 type MatProps = {
-  discarded: Card[][]
+  discarded: string[][]
 }
 
 function Mat({ discarded }: MatProps) {
@@ -114,7 +114,7 @@ function Mat({ discarded }: MatProps) {
 }
 
 type PlayProps = {
-  cards: Card[]
+  cards: CardStr[]
   isActive: boolean
 }
 

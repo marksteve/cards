@@ -5,11 +5,11 @@ import {
   DraggableStateSnapshot,
 } from 'react-beautiful-dnd'
 import styles from './Board.module.css'
-import { Card } from './Game'
+import { CardStr } from './Game'
 
 type BoardCardProps = {
-  card: Card
-  onCardSelect?: (card: Card) => void
+  card: CardStr
+  onCardSelect?: (card: CardStr) => void
   isActive?: boolean
   draggable?: [DraggableProvided, DraggableStateSnapshot, DraggableRubric]
   rotation?: number
@@ -40,8 +40,8 @@ export default function BoardCard({
   if (!draggable) {
     const style = { '--rotation': `${rotation || 0}deg` } as CSSProperties
     return (
-      <div className={className} style={style} >
-        <img alt={String(card)} {...props} />
+      <div className={className} style={style}>
+        <img alt={card} {...props} />
       </div>
     )
   }
@@ -55,7 +55,7 @@ export default function BoardCard({
       {...provided.draggableProps}
       {...provided.dragHandleProps}
     >
-      <img alt={String(card)} {...props} />
+      <img alt={card} {...props} />
     </div>
   )
 }

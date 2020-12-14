@@ -18,7 +18,7 @@ enum Combi {
   StraightFlush,
 }
 
-type CardStr = string
+export type CardStr = string
 
 export class Card {
   rank: string

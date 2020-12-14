@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from 'react'
 import {
   DragDropContext,
-  Droppable,
   Draggable,
+  Droppable,
   DropResult,
 } from 'react-beautiful-dnd'
 import styles from './Board.module.css'
 import BoardCard from './BoardCard'
 import Button from './Button'
-import { Card } from './Game'
+import { CardStr } from './Game'
 
 type BoardHandProps = {
   name: string
-  cards: Card[]
-  onPlay?: (cards: Card[]) => void
+  cards: CardStr[]
+  onPlay?: (cards: CardStr[]) => void
   onPass?: () => void
   isCurrent?: boolean
   isPlayer?: boolean
@@ -33,16 +33,14 @@ export default function BoardHand({
 
   const canPlay = isCurrent && isPlayer
 
-  const [selected, setSelected] = useState<Card[]>([])
-  const [ordered, setOrdered] = useState<Card[]>(cards)
+  const [selected, setSelected] = useState<CardStr[]>([])
+  const [ordered, setOrdered] = useState<CardStr[]>(cards)
 
   useEffect(() => {
-    setOrdered((ordered) =>
-      ordered.filter((card) => cards.map(String).includes(String(card)))
-    )
+    setOrdered((ordered) => ordered.filter((card) => cards.includes(card)))
   }, [cards, setOrdered])
 
-  function handleCardSelect(card: Card) {
+  function handleCardSelect(card: CardStr) {
     if (!canPlay) {
       return
     }
@@ -106,16 +104,12 @@ export default function BoardHand({
           {(provided) => (
             <div className={styles.handCards} ref={provided.innerRef}>
               {ordered.map((card, i) => (
-                <Draggable
-                  key={String(card)}
-                  draggableId={String(card)}
-                  index={i}
-                >
+                <Draggable key={card} draggableId={card} index={i}>
                   {(...draggable) => (
                     <BoardCard
                       card={card}
                       onCardSelect={handleCardSelect}
-                      isActive={selected.map(String).includes(String(card))}
+                      isActive={selected.includes(card)}
                       draggable={draggable}
                     />
                   )}
