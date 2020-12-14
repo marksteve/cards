@@ -44,7 +44,11 @@ export default function BoardHand({
     if (!canPlay) {
       return
     }
-    setSelected([...selected, card])
+    setSelected((selected) =>
+      selected.includes(card)
+        ? selected.filter((c) => c !== card)
+        : [...selected, card]
+    )
   }
 
   function handlePlay() {
