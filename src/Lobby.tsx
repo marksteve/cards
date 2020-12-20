@@ -66,10 +66,7 @@ export default function Lobby() {
   return (
     <div className={styles.lobby}>
       <div className="dialog">
-        <h1>
-          <img src={`/${GAME_ID}-logo.png`} alt={GAME_NAME} />
-          {GAME_NAME}
-        </h1>
+        <GameTitle />
         <p>{GAME_DESCRIPTION}</p>
         <div className={styles.inputCombo}>
           <input
@@ -81,6 +78,15 @@ export default function Lobby() {
         </div>
       </div>
     </div>
+  )
+}
+
+function GameTitle() {
+  return (
+    <h1>
+      <img src={`/${GAME_ID}-logo.png`} alt={GAME_NAME} />
+      {GAME_NAME}
+    </h1>
   )
 }
 
@@ -160,10 +166,23 @@ function MatchLobby({ matchID, lobbyClient }: MatchLobbyProps) {
   return (
     <div className={styles.lobby}>
       <div className="dialog">
-        <h1>DOS</h1>
+        <GameTitle />
         <MatchPlayers players={match.players} />
+        <br />
         {player.credentials.length > 0 ? (
-          <p>Waiting for more players&hellip;</p>
+          <>
+            <p>
+              Waiting for{' '}
+              {NUM_PLAYERS -
+                match.players.filter((player) => player.name).length}{' '}
+              more players&hellip;
+            </p>
+            <br />
+            <h3>Link to this game:</h3>
+            <p>
+              <input type="text" value={window.location.href} readOnly />
+            </p>
+          </>
         ) : (
           <div className={styles.inputCombo}>
             <input

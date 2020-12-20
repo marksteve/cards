@@ -32,12 +32,18 @@
 
 .matchPlayers {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
+}
+
+.matchPlayers > h2 {
+  width: 100%;
 }
 
 .matchPlayer {
   border: 3px solid;
   border-radius: 3px;
   padding: 0 0.5rem;
-  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+  background-color: var(--accent);
 }
