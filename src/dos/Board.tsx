@@ -3,14 +3,14 @@ import { BoardProps } from 'boardgame.io/react'
 import { range } from 'd3-array'
 import firebase from 'firebase/app'
 import React from 'react'
+import BoardCard from '../BoardCard'
+import BoardHand from '../BoardHand'
+import Button from '../Button'
+import { toInt } from '../utils'
 import styles from './Board.module.css'
-import BoardCard from './BoardCard'
-import BoardHand from './BoardHand'
-import Button from './Button'
-import { CardStr, GAME_ID, State } from './Game'
-import { toInt } from './utils'
+import { GAME_ID, State } from './Game'
 
-export default function PusoyDosBoard({
+export default function Board({
   G,
   ctx,
   moves,

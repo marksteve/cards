@@ -1,15 +1,25 @@
 import { useLocalStorage, writeStorage } from '@rehooks/local-storage'
 import { LobbyAPI, Server } from 'boardgame.io'
 import { LobbyClient } from 'boardgame.io/client'
-import { SocketIO } from 'boardgame.io/multiplayer'
-import { Client } from 'boardgame.io/react'
 import firebase from 'firebase/app'
-import React, { ChangeEvent, useEffect, useMemo, useState } from 'react'
+import React, {
+  ChangeEvent,
+  Suspense,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 import { useDocumentData } from 'react-firebase-hooks/firestore'
-import PusoyDosBoard from './Board'
 import Button from './Button'
-import { GAME_ID, NUM_PLAYERS, PusoyDos } from './Game'
 import styles from './Lobby.module.css'
+import { toInt } from './utils'
+
+const GAME_ID = process.env.REACT_APP_GAME_ID!
+const GAME_NAME = process.env.REACT_APP_GAME_NAME
+const GAME_DESCRIPTION = process.env.REACT_APP_GAME_DESCRIPTION
+const NUM_PLAYERS = toInt(process.env.REACT_APP_NUM_PLAYERS!)
+
+const Game = React.lazy(() => import(`./${GAME_ID}/Game`))
 
 export default function Lobby() {
   const matchID = window.location.pathname.replace(/\//g, '')
@@ -56,8 +66,11 @@ export default function Lobby() {
   return (
     <div className={styles.lobby}>
       <div className="dialog">
-        <h1>DOS</h1>
-        <p>Play Pusoy Dos online. That's it.</p>
+        <h1>
+          <img src={`/${GAME_ID}-logo.png`} alt={GAME_NAME} />
+          {GAME_NAME}
+        </h1>
+        <p>{GAME_DESCRIPTION}</p>
         <div className={styles.inputCombo}>
           <input
             type="text"
@@ -134,11 +147,13 @@ function MatchLobby({ matchID, lobbyClient }: MatchLobbyProps) {
 
   if (match.players.every((player) => player.name)) {
     return (
-      <Game
-        matchID={matchID}
-        playerID={player.id}
-        credentials={player.credentials}
-      />
+      <Suspense fallback={null}>
+        <Game
+          matchID={matchID}
+          playerID={player.id}
+          credentials={player.credentials}
+        />
+      </Suspense>
     )
   }
 
@@ -165,14 +180,6 @@ function MatchLobby({ matchID, lobbyClient }: MatchLobbyProps) {
   )
 }
 
-const Game = Client({
-  game: PusoyDos,
-  numPlayers: NUM_PLAYERS,
-  board: PusoyDosBoard,
-  multiplayer: SocketIO({ server: process.env.REACT_APP_GAME_SERVER }),
-  debug: false,
-})
-
 type MatchPlayersProps = {
   players: Server.PlayerMetadata[]
 }
@@ -184,7 +191,9 @@ function MatchPlayers({ players }: MatchPlayersProps) {
       {players
         .filter((player) => player.name)
         .map((player) => (
-          <div className={styles.matchPlayer}>{player.name}</div>
+          <div key={player.id} className={styles.matchPlayer}>
+            {player.name}
+          </div>
         ))}
     </div>
   )

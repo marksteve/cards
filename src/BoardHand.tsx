@@ -5,10 +5,9 @@ import {
   Droppable,
   DropResult,
 } from 'react-beautiful-dnd'
-import styles from './Board.module.css'
 import BoardCard from './BoardCard'
+import styles from './BoardHand.module.css'
 import Button from './Button'
-import { CardStr } from './Game'
 
 type BoardHandProps = {
   name: string

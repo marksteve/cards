@@ -6,14 +6,15 @@
   flex-direction: column;
 }
 
-.lobby h1 {
-  background: url(./dos-logo-card.png) no-repeat left center;
-  padding-left: 3rem;
-  background-size: 2rem;
-}
-
 .lobby > div {
   min-width: 50rem;
+}
+
+.lobby h1 > img {
+  height: 0.7em;
+  vertical-align: middle;
+  margin-right: 0.2em;
+  transform: rotate(-15deg);
 }
 
 .inputCombo {

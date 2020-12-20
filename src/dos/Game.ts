@@ -1,11 +1,14 @@
 import { Ctx, Game } from 'boardgame.io'
 import { INVALID_MOVE, PlayerView } from 'boardgame.io/core'
+import { SocketIO } from 'boardgame.io/multiplayer'
+import { Client } from 'boardgame.io/react'
 import { ascending } from 'd3-array'
-import { toInt } from './utils'
+import React from 'react'
+import { toInt } from '../utils'
 
-export const GAME_ID = 'pusoy-dos'
-export const NUM_PLAYERS = 4
+export const GAME_ID = 'dos'
 
+const NUM_PLAYERS = 4
 const RANKS = '3456789TJQKA2'
 const SUITS = 'CSHD'
 
@@ -17,8 +20,6 @@ enum Combi {
   Quadro,
   StraightFlush,
 }
-
-export type CardStr = string
 
 export class Card {
   rank: string
@@ -203,7 +204,7 @@ export type State = {
   winners: number[]
 }
 
-export const PusoyDos: Game = {
+export const Dos: Game<State> = {
   name: GAME_ID,
   minPlayers: NUM_PLAYERS,
   maxPlayers: NUM_PLAYERS,
@@ -335,3 +336,11 @@ function getNext(G: State, ctx: Ctx) {
     }
   }
 }
+
+export default Client({
+  game: Dos,
+  numPlayers: NUM_PLAYERS,
+  board: React.lazy(() => import('./Board')),
+  multiplayer: SocketIO({ server: process.env.REACT_APP_GAME_SERVER }),
+  debug: false,
+})

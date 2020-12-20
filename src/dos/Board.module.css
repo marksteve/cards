@@ -8,55 +8,6 @@
   grid-template-rows: 1fr 2fr 2fr;
 }
 
-.hand {
-  grid-column: span 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.hand > h2 {
-  font-size: 32px;
-  text-align: center;
-}
-
-.handPlayer {
-  grid-column: 1 / -1;
-}
-
-.handCurrent {
-  background: var(--green-1);
-  border: 3px solid var(--green-3);
-  border-radius: 3px;
-}
-
-.actions > button {
-  margin: 0 0.5rem;
-}
-
-.handCards {
-  width: 100%;
-  display: grid;
-  grid-auto-flow: column;
-  grid-template-columns: repeat(auto-fill, calc(100% / var(--max-cards)));
-  padding: 1rem;
-}
-
-.handCards > .card {
-  text-align: center;
-}
-
-.handCards > .card > img {
-  width: 90%;
-}
-
-.cardActive > img, .hand > img:hover {
-  box-shadow: 0 0 0 6px var(--accent);
-  background: var(--accent);
-  border-radius: 1px;
-}
-
 .mat {
   grid-column: 1 / -1;
   position: relative;
@@ -70,7 +21,7 @@
   transform: translate(-50%, -50%);
 }
 
-.play > .card {
+.play > [data-board-card] {
   width: calc(100% / var(--max-cards));
   position: absolute;
   top: 50%;
@@ -80,7 +31,7 @@
   text-align: center;
 }
 
-.play > .card > img {
+.play > [data-board-card] > img {
   width: 90%;
 }
 
@@ -114,7 +65,7 @@
   line-height: 1em;
   text-align: center;
   border-radius: 50%;
-  display: inline-block; 
+  display: inline-block;
   margin-right: 0.5em;
   border: 3px solid;
 }
