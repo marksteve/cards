@@ -118,15 +118,11 @@ export class Play {
   }
 
   fullHouse() {
-    if (
-      this.isSameRank(this.cards.slice(0, 2)) &&
-      this.isSameRank(this.cards.slice(2, 5))
-    ) {
-      return this.cards[2].value
-    } else if (
-      this.isSameRank(this.cards.slice(0, 3)) &&
-      this.isSameRank(this.cards.slice(3, 5))
-    ) {
+    const freqs = {}
+    this.cards.forEach(({rank}) => freqs[rank] = (freqs[rank] || 0) + 1)
+    const freqSet = new Set(Object.values(freqs))
+    if (freqSet.has(2) && freqSet.has(3)){
+      // Cards are sorted so the middle card will always be part of the trio
       return this.cards[2].value
     }
   }
