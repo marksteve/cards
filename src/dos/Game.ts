@@ -119,7 +119,7 @@ export class Play {
 
   fullHouse() {
     if (
-      this.isSameRank(this.cards.slice(0, 2)) ||
+      this.isSameRank(this.cards.slice(0, 2)) &&
       this.isSameRank(this.cards.slice(2, 5))
     ) {
       return this.cards[2].value
