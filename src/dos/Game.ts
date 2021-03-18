@@ -68,6 +68,13 @@ export class Play {
     this.cards = cards
     this.cards.sort((a, b) => (a.value > b.value ? 1 : -1))
     this.player = player
+    this.freqSet = this.getFreqSet()
+  }
+
+  getFreqSet() {
+    const freqs = {}
+    this.cards.forEach(({rank}) => freqs[rank] = (freqs[rank] || 0) + 1)
+    return new Set(Object.values(freqs))
   }
 
   isSameRank(cards: Card[]) {
@@ -109,19 +116,14 @@ export class Play {
   }
 
   quadro() {
-    if (
-      this.isSameRank(this.cards.slice(0, 4)) ||
-      this.isSameRank(this.cards.slice(1, 5))
-    ) {
+    if (this.freqSet.has(4)){
+      // Cards are sorted so any of the 3 middle cards will be part of the quadro
       return this.cards[1].value
     }
   }
 
   fullHouse() {
-    const freqs = {}
-    this.cards.forEach(({rank}) => freqs[rank] = (freqs[rank] || 0) + 1)
-    const freqSet = new Set(Object.values(freqs))
-    if (freqSet.has(2) && freqSet.has(3)){
+    if (this.freqSet.has(2) && this.freqSet.has(3)){
       // Cards are sorted so the middle card will always be part of the trio
       return this.cards[2].value
     }
