@@ -41,7 +41,8 @@
   width: 90%;
 }
 
-.cardActive > img, .hand > img:hover {
+.cardActive > img,
+.hand > img:hover {
   box-shadow: 0 0 0 6px var(--accent);
   background: var(--accent);
   border-radius: 1px;

@@ -30,7 +30,7 @@ ol {
 
 button,
 select,
-input[type=text] {
+input[type='text'] {
   font: inherit;
   line-height: 1;
   border: 3px solid;
@@ -50,7 +50,7 @@ button:active {
   transform: rotate(-3deg) translateY(1px);
 }
 
-input[type=text] {
+input[type='text'] {
   width: 100%;
 }
 

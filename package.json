@@ -55,6 +55,7 @@
     "@babel/core": "7.12.3",
     "@types/d3-array": "2.7.0",
     "@types/koa-static": "^4.0.1",
-    "@types/react-beautiful-dnd": "^13.0.0"
+    "@types/react-beautiful-dnd": "^13.0.0",
+    "prettier": "2.2.1"
   }
 }
