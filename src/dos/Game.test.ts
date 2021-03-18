@@ -55,3 +55,15 @@ test('flush', () => {
   // If suit is tied, then high card is used as breaker.
   expect(gt('9D 2D 3D 4D 6D', 'AD KD 8D JD TD')).toBeTruthy()
 })
+
+test('Invalid card combination', () =>
+  expect(Play.fromString('3H 9H JC JH JD').value).toBeNull()
+)
+
+test('Invalid card combination', () =>
+  expect(Play.fromString('9C 9H JS QS KC').value).toBeNull()
+)
+
+test('Invalid card combination', () =>
+  expect(Play.fromString('6D 8D TS TH TD').value).toBeNull()
+)
