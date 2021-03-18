@@ -73,7 +73,7 @@ export class Play {
 
   getFreqSet() {
     const freqs = {}
-    this.cards.forEach(({rank}) => freqs[rank] = (freqs[rank] || 0) + 1)
+    this.cards.forEach(({ rank }) => (freqs[rank] = (freqs[rank] || 0) + 1))
     return new Set(Object.values(freqs))
   }
 
@@ -116,14 +116,14 @@ export class Play {
   }
 
   quadro() {
-    if (this.freqSet.has(4)){
+    if (this.freqSet.has(4)) {
       // Cards are sorted so any of the 3 middle cards will be part of the quadro
       return this.cards[1].value
     }
   }
 
   fullHouse() {
-    if (this.freqSet.has(2) && this.freqSet.has(3)){
+    if (this.freqSet.has(2) && this.freqSet.has(3)) {
       // Cards are sorted so the middle card will always be part of the trio
       return this.cards[2].value
     }
