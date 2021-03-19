@@ -71,10 +71,13 @@ export class Play {
   }
 
   get withSameRank() {
-    const freqs = this.cards.reduce<Record<string, number>>((freqs, { rank }) => ({
-      ...freqs,
-      [rank]: (freqs[rank] || 0) + 1
-    }), {})
+    const freqs = this.cards.reduce<Record<string, number>>(
+      (freqs, { rank }) => ({
+        ...freqs,
+        [rank]: (freqs[rank] || 0) + 1,
+      }),
+      {}
+    )
     return new Set(Object.values(freqs))
   }
 
