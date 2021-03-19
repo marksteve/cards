@@ -68,17 +68,17 @@ export class Play {
     this.cards = cards
     this.cards.sort((a, b) => (a.value > b.value ? 1 : -1))
     this.player = player
-    this.freqSet = this.getFreqSet()
   }
 
-  getFreqSet() {
-    const freqs = {}
-    this.cards.forEach(({ rank }) => (freqs[rank] = (freqs[rank] || 0) + 1))
+  get withSameRank() {
+    const freqs = this.cards.reduce<Record<string, number>>(
+      (freqs, { rank }) => ({
+        ...freqs,
+        [rank]: (freqs[rank] || 0) + 1,
+      }),
+      {}
+    )
     return new Set(Object.values(freqs))
-  }
-
-  isSameRank(cards: Card[]) {
-    return cards[0].rank === cards[cards.length - 1].rank
   }
 
   straight() {
@@ -116,14 +116,14 @@ export class Play {
   }
 
   quadro() {
-    if (this.freqSet.has(4)) {
+    if (this.withSameRank.has(4)) {
       // Cards are sorted so any of the 3 middle cards will be part of the quadro
       return this.cards[1].value
     }
   }
 
   fullHouse() {
-    if (this.freqSet.has(2) && this.freqSet.has(3)) {
+    if (this.withSameRank.has(2) && this.withSameRank.has(3)) {
       // Cards are sorted so the middle card will always be part of the trio
       return this.cards[2].value
     }
@@ -134,14 +134,14 @@ export class Play {
       case 1:
         return this.cards[0].value
       case 2:
-        if (this.isSameRank(this.cards)) {
+        if (this.withSameRank.has(2)) {
           return this.cards[1].value
         } else {
           console.error("Pair doesn't match")
           break
         }
       case 3:
-        if (this.isSameRank(this.cards)) {
+        if (this.withSameRank.has(3)) {
           return this.cards[0].value
         } else {
           console.error("Trio doesn't match")
