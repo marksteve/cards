@@ -6,17 +6,17 @@ Browser-based card games. Right now it's just Pusoy Dos.
 
 ## Dev setup
 
-Run `yarn` to install dependencies.
+Run `npm install` to install dependencies.
 
 ## Testing
 
-Run `yarn test` to run tests.
+Run `npm test` to run tests.
 
 ## Deployment
 
-Games are automatically deployed through the [DigitalOcean App Platform](https://www.digitalocean.com/products/app-platform/).
+Games are automatically deployed through the [Railway](https://railway.app/).
 
 ## Contributing
 
 - Additional games are most welcome!
-- Please run `yarn format` before filing any pull requests.
+- Please run `npm run format` before filing any pull requests.
