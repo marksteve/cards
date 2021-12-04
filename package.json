@@ -31,7 +31,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "server:build": "tsc --build tsconfig.server.json",
-    "server:start": "yarn server:build && node ./dist/server",
+    "server:start": "npm run server:build && node ./dist/server",
     "format": "prettier --write ."
   },
   "eslintConfig": {
