@@ -21,6 +21,8 @@ export default function BoardCard({
   draggable,
   rotation,
 }: BoardCardProps) {
+  const skin = 'cute'
+
   const classNames = [styles.card]
   if (isActive) {
     classNames.push(styles.cardActive)
@@ -32,7 +34,7 @@ export default function BoardCard({
   }, [card, onCardSelect])
 
   const props = {
-    src: `${process.env.PUBLIC_URL}/assets/cards/${card}.png`,
+    src: `${process.env.PUBLIC_URL}/assets/cards/${skin}/${card}.png`,
     onClick: handleClick,
   }
 
