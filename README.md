@@ -10,7 +10,16 @@ Run `npm install` to install dependencies.
 
 ## Testing
 
+### Automated tests
+
 Run `npm test` to run tests.
+
+### Local deployment
+
+```
+npm run build
+npm run server:start
+```
 
 ## Deployment
 
