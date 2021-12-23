@@ -1,4 +1,5 @@
-import React, { CSSProperties, useCallback } from 'react'
+import React, { CSSProperties, useCallback, MouseEvent } from 'react'
+import { useLocalStorage, writeStorage } from '@rehooks/local-storage'
 import {
   DraggableProvided,
   DraggableRubric,
@@ -21,7 +22,7 @@ export default function BoardCard({
   draggable,
   rotation,
 }: BoardCardProps) {
-  const skin = 'cute'
+  const [skin, setSkin] = useLocalStorage<string>('skin', 'cute')
 
   const classNames = [styles.card]
   if (isActive) {
@@ -33,9 +34,21 @@ export default function BoardCard({
     onCardSelect && onCardSelect(card)
   }, [card, onCardSelect])
 
+  const toggleSkin = () => {
+    const newSkin = skin == 'cute' ? 'classic' : 'cute'
+    writeStorage('skin', newSkin)
+    setSkin(newSkin)
+  }
+
+  const handleRightClick = (e: MouseEvent) => {
+    e.preventDefault()
+    toggleSkin()
+  }
+
   const props = {
     src: `${process.env.PUBLIC_URL}/assets/cards/${skin}/${card}.png`,
     onClick: handleClick,
+    onContextMenu: handleRightClick,
   }
 
   if (!draggable) {
