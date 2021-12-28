@@ -171,12 +171,7 @@ function MatchLobby({ matchID, lobbyClient }: MatchLobbyProps) {
         <br />
         {player.credentials.length > 0 ? (
           <>
-            <p>
-              Waiting for{' '}
-              {NUM_PLAYERS -
-                match.players.filter((player) => player.name).length}{' '}
-              more players&hellip;
-            </p>
+            <CardSkinSwitcher />
             <br />
             <h3>Link to this game:</h3>
             <p>
@@ -204,16 +199,44 @@ type MatchPlayersProps = {
 }
 
 function MatchPlayers({ players }: MatchPlayersProps) {
+  const filledPlayers = players.filter((p) => p.name)
+
   return (
     <div className={styles.matchPlayers}>
-      <h2>Players</h2>
-      {players
-        .filter((player) => player.name)
-        .map((player) => (
-          <div key={player.id} className={styles.matchPlayer}>
-            {player.name}
-          </div>
-        ))}
+      <h2>
+        Players ({filledPlayers.length}/{players.length})
+      </h2>
+      {filledPlayers.map((player) => (
+        <div key={player.id} className={styles.matchPlayer}>
+          {player.name}
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function CardSkinSwitcher() {
+  const [currentSkin, setSkin] = useLocalStorage<string>('skin', 'cute')
+
+  return (
+    <div className={styles.cardSkinSwitcher}>
+      <p>Choose your card skin:</p>
+      {['cute', 'classic'].map((skin) => (
+        <div
+          className={skin == currentSkin ? styles.selectedCardSkin : ''}
+          title={skin}
+          onClick={() => {
+            writeStorage('skin', skin)
+            setSkin(skin)
+          }}
+        >
+          <img
+            src={`${process.env.PUBLIC_URL}/assets/cards/${skin}/AS.png`}
+            width="100"
+          />
+        </div>
+      ))}
+      <p>Switch skins in-game by right-clicking a card.</p>
     </div>
   )
 }
