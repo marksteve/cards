@@ -19,7 +19,7 @@ export default function Board({
   matchData,
   matchID,
 }: BoardProps<State>) {
-  const { players, remaining, discarded } = G
+  const { players, remaining, discarded, lastPlay } = G
 
   const currentPlayer = toInt(ctx.currentPlayer)
   const player = toInt(playerID)
@@ -57,7 +57,7 @@ export default function Board({
   return (
     <div className={styles.board}>
       <OtherHands hands={otherHands} currentPlayer={currentPlayer} />
-      <Mat discarded={discarded} />
+      <Mat discarded={discarded} lastPlayer={playerName(lastPlay?.player!)} />
       <BoardHand
         cards={players[player]}
         name={matchData![player].name!}
@@ -101,11 +101,12 @@ function OtherHands({ hands, currentPlayer }: OtherHandsProps) {
 
 type MatProps = {
   discarded: string[][]
+  lastPlayer: string
 }
 
-function Mat({ discarded }: MatProps) {
+function Mat({ discarded, lastPlayer }: MatProps) {
   return (
-    <div className={styles.mat}>
+    <div className={styles.mat} title={`Played by ${lastPlayer}`}>
       {discarded.map((cards, i) => (
         <Play key={i} cards={cards} isActive={i === discarded.length - 1} />
       ))}
