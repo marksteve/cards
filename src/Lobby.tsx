@@ -191,9 +191,9 @@ function MatchLobby({ matchID, lobbyClient }: MatchLobbyProps) {
         <GameTitle />
         <MatchPlayers players={match.players} />
         <br />
+        <CardSkinSwitcher />
         {player.credentials.length > 0 ? (
           <>
-            <CardSkinSwitcher />
             <br />
             <h3>Link to this game:</h3>
             <p>
