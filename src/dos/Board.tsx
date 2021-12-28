@@ -23,7 +23,7 @@ export default function Board({
 
   const currentPlayer = toInt(ctx.currentPlayer)
   const player = toInt(playerID)
-  const playerName = (p: number) => p !== undefined ? matchData![p].name! : ''
+  const playerName = (p: number) => (p !== undefined ? matchData![p].name! : '')
 
   const start = (player + 1) % ctx.numPlayers
   const otherHands = range(start, start + ctx.numPlayers - 1)

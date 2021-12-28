@@ -8,6 +8,7 @@ import React, {
   useEffect,
   useMemo,
   useState,
+  KeyboardEvent,
 } from 'react'
 import { useDocumentData } from 'react-firebase-hooks/firestore'
 import Button from './Button'
@@ -28,6 +29,7 @@ export default function Lobby() {
     []
   )
   const [playerName, setPlayerName] = useState<string>('')
+  const [createGameClicked, setCreateGameClicked] = useState<boolean>(false)
 
   if (matchID) {
     return <MatchLobby matchID={matchID} lobbyClient={lobbyClient} />
@@ -38,9 +40,11 @@ export default function Lobby() {
   }
 
   async function handleCreate() {
-    if (playerName.length < 1) {
+    if (!playerName.length) {
+      alert('You need to have a name!')
       return
     }
+    setCreateGameClicked(true)
     const { matchID } = await lobbyClient.createMatch(GAME_ID, {
       numPlayers: NUM_PLAYERS,
     })
@@ -63,6 +67,12 @@ export default function Lobby() {
     window.location.href = `/${matchID}`
   }
 
+  const handleKeyPress = ({ key }: KeyboardEvent) => {
+    if (key == 'Enter') {
+      handleCreate()
+    }
+  }
+
   return (
     <div className={styles.lobby}>
       <div className="dialog">
@@ -73,8 +83,11 @@ export default function Lobby() {
             type="text"
             onChange={handleNameChange}
             placeholder="Your name"
+            onKeyPress={handleKeyPress}
           />
-          <Button onClick={handleCreate}>Create a Game</Button>
+          <Button onClick={handleCreate} disabled={createGameClicked}>
+            {createGameClicked ? 'Loading...' : 'Create a Game'}
+          </Button>
         </div>
       </div>
     </div>
@@ -103,6 +116,7 @@ function MatchLobby({ matchID, lobbyClient }: MatchLobbyProps) {
     name: '',
     credentials: '',
   })
+  const [joinGameClicked, setJoinGameClicked] = useState<boolean>(false)
 
   function updateMatch() {
     lobbyClient.getMatch(GAME_ID, matchID).then((match) => {
@@ -127,9 +141,11 @@ function MatchLobby({ matchID, lobbyClient }: MatchLobbyProps) {
   }
 
   async function handleJoin() {
-    if (player.name === '') {
+    if (!player.name.length) {
+      alert('You need to have a name!')
       return
     }
+    setJoinGameClicked(true)
     for (const { id, name } of match?.players || []) {
       if (!name) {
         const { playerCredentials } = await lobbyClient.joinMatch(
@@ -163,6 +179,12 @@ function MatchLobby({ matchID, lobbyClient }: MatchLobbyProps) {
     )
   }
 
+  const handleKeyPress = ({ key }: KeyboardEvent) => {
+    if (key == 'Enter') {
+      handleJoin()
+    }
+  }
+
   return (
     <div className={styles.lobby}>
       <div className="dialog">
@@ -185,8 +207,11 @@ function MatchLobby({ matchID, lobbyClient }: MatchLobbyProps) {
               onChange={handleNameChange}
               value={player.name}
               placeholder="Your name"
+              onKeyPress={handleKeyPress}
             />
-            <Button onClick={handleJoin}>Join Game</Button>
+            <Button onClick={handleJoin} disabled={joinGameClicked}>
+              {joinGameClicked ? 'Loading...' : 'Join Game'}
+            </Button>
           </div>
         )}
       </div>
