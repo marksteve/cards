@@ -192,9 +192,9 @@ function MatchLobby({ matchID, lobbyClient }: MatchLobbyProps) {
         <MatchPlayers players={match.players} />
         <br />
         <CardSkinSwitcher />
+        <br />
         {player.credentials.length > 0 ? (
           <>
-            <br />
             <h3>Link to this game:</h3>
             <p>
               <input type="text" value={window.location.href} readOnly />
@@ -248,7 +248,7 @@ function CardSkinSwitcher() {
       <p>Choose your card skin:</p>
       {['cute', 'classic'].map((skin) => (
         <div
-          className={skin == currentSkin ? styles.selectedCardSkin : ''}
+          className={skin === currentSkin ? styles.selectedCardSkin : ''}
           title={skin}
           onClick={() => {
             writeStorage('skin', skin)
@@ -258,6 +258,7 @@ function CardSkinSwitcher() {
           <img
             src={`${process.env.PUBLIC_URL}/assets/cards/${skin}/AS.png`}
             width="100"
+            alt={skin}
           />
         </div>
       ))}
