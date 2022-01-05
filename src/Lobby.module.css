@@ -47,3 +47,25 @@
   margin-right: 0.5rem;
   background-color: var(--accent);
 }
+
+.cardSkinSwitcher {
+  text-align: center;
+  border: 3px solid grey;
+  border-radius: 3px;
+}
+
+.cardSkinSwitcher > div {
+  display: inline-block;
+  padding: 3px 5px;
+  border-radius: 3px;
+  border: 3px solid;
+  border-color: transparent;
+}
+
+.cardSkinSwitcher > div:hover {
+  cursor: pointer;
+}
+
+.cardSkinSwitcher > div.selectedCardSkin {
+  border-color: red;
+}
