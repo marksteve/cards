@@ -23,7 +23,7 @@ npm run server:start
 
 ## Deployment
 
-Games are automatically deployed through the [Railway](https://railway.app/).
+Games are deployed through Fly.io
 
 ## Contributing
 
