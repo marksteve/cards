@@ -55,11 +55,13 @@
 }
 
 .cardSkinSwitcher > div {
-  display: inline-block;
-  padding: 3px 5px;
-  border-radius: 3px;
+  display: inline-flex;
+  padding: 12px 16px;
+  border-radius: 8px;
   border: 3px solid;
   border-color: transparent;
+  flex-direction: column;
+  font-size: 24px;
 }
 
 .cardSkinSwitcher > div:hover {
@@ -67,5 +69,5 @@
 }
 
 .cardSkinSwitcher > div.selectedCardSkin {
-  border-color: red;
+  border-color: #bb2f40;
 }

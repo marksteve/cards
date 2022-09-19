@@ -260,9 +260,12 @@ function CardSkinSwitcher() {
             width="100"
             alt={skin}
           />
+          {title(skin)}
         </div>
       ))}
       <p>Switch skins in-game by right-clicking a card.</p>
     </div>
   )
 }
+
+const title = (s: string) => s[0].toUpperCase() + s.slice(1)
