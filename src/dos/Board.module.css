@@ -62,7 +62,7 @@
   content: counter(winners);
   background: var(--accent);
   width: 1em;
-  line-height: 1em;
+  line-height: 1;
   text-align: center;
   border-radius: 50%;
   display: inline-block;

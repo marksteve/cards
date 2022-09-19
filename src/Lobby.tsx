@@ -248,7 +248,9 @@ function CardSkinSwitcher() {
       <p>Choose your card skin:</p>
       {['cute', 'classic'].map((skin) => (
         <div
-          className={skin === currentSkin ? styles.selectedCardSkin : ''}
+          className={`${styles.cardSkin} ${
+            skin === currentSkin ? styles.selectedCardSkin : ''
+          }`}
           title={skin}
           onClick={() => {
             writeStorage('skin', skin)
@@ -263,7 +265,9 @@ function CardSkinSwitcher() {
           {title(skin)}
         </div>
       ))}
-      <p>Switch skins in-game by right-clicking a card.</p>
+      <p className={styles.cardSkinInstructions}>
+        Switch skins in-game by right-clicking a card.
+      </p>
     </div>
   )
 }
