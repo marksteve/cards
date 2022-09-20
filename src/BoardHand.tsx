@@ -86,8 +86,8 @@ export default function BoardHand({
   const actions = canPlay ? (
     <div className={styles.actions}>
       <Button onClick={handlePlay}>Play</Button>
-      <Button onClick={handlePass}>Pass</Button>
       <Button onClick={sortHand}>Sort</Button>
+      <Button onClick={handlePass}>Pass</Button>
     </div>
   ) : null
 
