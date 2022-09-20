@@ -41,10 +41,12 @@ export default function BoardHand({
   }, [cards, setOrdered])
 
   function sortHand() {
-    setOrdered([...ordered.sort((c1, c2) => {
-      const [v1, v2] = [c1, c2].map(x => Play.fromString(x).value)
-      return v1 - v2
-    })])
+    setOrdered([
+      ...ordered.sort((c1, c2) => {
+        const [v1, v2] = [c1, c2].map((x) => Play.fromString(x).value)
+        return v1 - v2
+      }),
+    ])
   }
 
   function handleCardSelect(card: CardStr) {
