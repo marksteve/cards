@@ -175,7 +175,7 @@ export class Play {
           return combi * 1000 + val
         }
     }
-    return null
+    return 0
   }
 
   get [Symbol.toStringTag]() {
