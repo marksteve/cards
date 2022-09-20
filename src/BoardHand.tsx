@@ -5,6 +5,7 @@ import {
   Droppable,
   DropResult,
 } from 'react-beautiful-dnd'
+import { Play } from './dos/Game'
 import BoardCard from './BoardCard'
 import styles from './BoardHand.module.css'
 import Button from './Button'
@@ -38,6 +39,13 @@ export default function BoardHand({
   useEffect(() => {
     setOrdered((ordered) => ordered.filter((card) => cards.includes(card)))
   }, [cards, setOrdered])
+
+  function sortHand() {
+    setOrdered([...ordered.sort((c1, c2) => {
+      const [v1, v2] = [c1, c2].map(x => Play.fromString(x).value)
+      return v1 - v2
+    })])
+  }
 
   function handleCardSelect(card: CardStr) {
     if (!canPlay) {
@@ -77,6 +85,7 @@ export default function BoardHand({
     <div className={styles.actions}>
       <Button onClick={handlePlay}>Play</Button>
       <Button onClick={handlePass}>Pass</Button>
+      <Button onClick={sortHand}>Sort</Button>
     </div>
   ) : null
 
