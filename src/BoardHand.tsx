@@ -5,7 +5,7 @@ import {
   Droppable,
   DropResult,
 } from 'react-beautiful-dnd'
-import { Play } from './dos/Game'
+import { Card } from './dos/Game'
 import BoardCard from './BoardCard'
 import styles from './BoardHand.module.css'
 import Button from './Button'
@@ -43,7 +43,7 @@ export default function BoardHand({
   function sortHand() {
     setOrdered([
       ...ordered.sort((c1, c2) => {
-        const [v1, v2] = [c1, c2].map((x) => Play.fromString(x).value)
+        const [v1, v2] = [c1, c2].map((x) => Card.fromString(x).value)
         return v1 - v2
       }),
     ])

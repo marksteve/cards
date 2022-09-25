@@ -57,10 +57,10 @@ test('flush', () => {
 })
 
 test('Invalid card combination', () =>
-  expect(Play.fromString('3H 9H JC JH JD').value).toBe(0))
+  expect(Play.fromString('3H 9H JC JH JD').value).toBeNull())
 
 test('Invalid card combination', () =>
-  expect(Play.fromString('9C 9H JS QS KC').value).toBe(0))
+  expect(Play.fromString('9C 9H JS QS KC').value).toBeNull())
 
 test('Invalid card combination', () =>
-  expect(Play.fromString('6D 8D TS TH TD').value).toBe(0))
+  expect(Play.fromString('6D 8D TS TH TD').value).toBeNull())
