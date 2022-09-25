@@ -105,36 +105,36 @@ export default function BoardHand({
         </div>
       </div>
     )
+  } else {
+    return (
+      <div className={classNames.join(' ')}>
+        <h2>
+          {name}
+          {actions}
+        </h2>
+        <DragDropContext onDragEnd={handleDragEnd}>
+          <Droppable droppableId="droppable" direction="horizontal">
+            {(provided) => (
+              <div className={styles.handCards} ref={provided.innerRef}>
+                {ordered.map((card, i) => (
+                  <Draggable key={card} draggableId={card} index={i}>
+                    {(...draggable) => (
+                      <BoardCard
+                        card={card}
+                        onCardSelect={handleCardSelect}
+                        isActive={selected.includes(card)}
+                        draggable={draggable}
+                      />
+                    )}
+                  </Draggable>
+                ))}
+              </div>
+            )}
+          </Droppable>
+        </DragDropContext>
+      </div>
+    )
   }
-
-  return (
-    <div className={classNames.join(' ')}>
-      <h2>
-        {name}
-        {actions}
-      </h2>
-      <DragDropContext onDragEnd={handleDragEnd}>
-        <Droppable droppableId="droppable" direction="horizontal">
-          {(provided) => (
-            <div className={styles.handCards} ref={provided.innerRef}>
-              {ordered.map((card, i) => (
-                <Draggable key={card} draggableId={card} index={i}>
-                  {(...draggable) => (
-                    <BoardCard
-                      card={card}
-                      onCardSelect={handleCardSelect}
-                      isActive={selected.includes(card)}
-                      draggable={draggable}
-                    />
-                  )}
-                </Draggable>
-              ))}
-            </div>
-          )}
-        </Droppable>
-      </DragDropContext>
-    </div>
-  )
 }
 
 function reorder(list: any[], startIndex: number, endIndex: number) {
