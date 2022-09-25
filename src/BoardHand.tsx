@@ -91,21 +91,7 @@ export default function BoardHand({
     </div>
   ) : null
 
-  if (!isPlayer) {
-    return (
-      <div className={classNames.join(' ')}>
-        <h2>
-          {name}
-          {actions}
-        </h2>
-        <div className={styles.handCards}>
-          {cards.map((card, i) => (
-            <BoardCard key={i} card={card} />
-          ))}
-        </div>
-      </div>
-    )
-  } else {
+  if (isPlayer) {
     return (
       <div className={classNames.join(' ')}>
         <h2>
@@ -132,6 +118,20 @@ export default function BoardHand({
             )}
           </Droppable>
         </DragDropContext>
+      </div>
+    )
+  } else {
+    return (
+      <div className={classNames.join(' ')}>
+        <h2>
+          {name}
+          {actions}
+        </h2>
+        <div className={styles.handCards}>
+          {cards.map((card, i) => (
+            <BoardCard key={i} card={card} />
+          ))}
+        </div>
       </div>
     )
   }
