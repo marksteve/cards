@@ -83,20 +83,24 @@ export default function BoardHand({
     setOrdered(reorder(ordered, result.source.index, result.destination.index))
   }
 
-  const actions = canPlay ? (
-    <div className={styles.actions}>
-      <Button onClick={handlePlay}>Play</Button>
-      <Button onClick={sortHand}>Sort</Button>
-      <Button onClick={handlePass}>Pass</Button>
-    </div>
-  ) : null
+  const actions = isCurrent
+    ? [
+        ['Play', handlePlay],
+        ['Sort', sortHand],
+        ['Pass', handlePass],
+      ]
+    : [['Sort', sortHand]]
 
   if (isPlayer) {
     return (
       <div className={classNames.join(' ')}>
         <h2>
           {name}
-          {actions}
+          <div className={styles.actions}>
+            {actions.map(([label, func]) => (
+              <Button onClick={func}>{label}</Button>
+            ))}
+          </div>
         </h2>
         <DragDropContext onDragEnd={handleDragEnd}>
           <Droppable droppableId="droppable" direction="horizontal">
@@ -123,10 +127,7 @@ export default function BoardHand({
   } else {
     return (
       <div className={classNames.join(' ')}>
-        <h2>
-          {name}
-          {actions}
-        </h2>
+        <h2>{name}</h2>
         <div className={styles.handCards}>
           {cards.map((card, i) => (
             <BoardCard key={i} card={card} />
