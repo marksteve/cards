@@ -83,7 +83,7 @@ export default function BoardHand({
     setOrdered(reorder(ordered, result.source.index, result.destination.index))
   }
 
-  const actions = isCurrent
+  const actions: Array<[string, () => void]> = isCurrent
     ? [
         ['Play', handlePlay],
         ['Sort', sortHand],
