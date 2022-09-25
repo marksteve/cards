@@ -253,7 +253,7 @@ export const Dos: Game<State> = {
         const playString = play.cards.map(String)
         const playValue = play.value
 
-        if (playValue === null) {
+        if (!playValue) {
           return INVALID_MOVE
         }
 
