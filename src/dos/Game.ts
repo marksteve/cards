@@ -175,7 +175,7 @@ export class Play {
           return combi * 1000 + val
         }
     }
-    return 0
+    return null
   }
 
   get [Symbol.toStringTag]() {
@@ -253,7 +253,8 @@ export const Dos: Game<State> = {
         const playString = play.cards.map(String)
         const playValue = play.value
 
-        if (!playValue) {
+        if (playValue === null) {
+          console.log('Invalid move')
           return INVALID_MOVE
         }
 
@@ -278,7 +279,7 @@ export const Dos: Game<State> = {
             return INVALID_MOVE
           }
           if (playValue < G.lastPlay.value!) {
-            console.log('Play value lower that last play')
+            console.log('Play value lower than last play')
             return INVALID_MOVE
           }
         }

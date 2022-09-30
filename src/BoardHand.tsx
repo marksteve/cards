@@ -5,7 +5,7 @@ import {
   Droppable,
   DropResult,
 } from 'react-beautiful-dnd'
-import { Play } from './dos/Game'
+import { Card } from './dos/Game'
 import BoardCard from './BoardCard'
 import styles from './BoardHand.module.css'
 import Button from './Button'
@@ -43,7 +43,7 @@ export default function BoardHand({
   function sortHand() {
     setOrdered([
       ...ordered.sort((c1, c2) => {
-        const [v1, v2] = [c1, c2].map((x) => Play.fromString(x).value)
+        const [v1, v2] = [c1, c2].map((x) => Card.fromString(x).value)
         return v1 - v2
       }),
     ])
@@ -83,21 +83,51 @@ export default function BoardHand({
     setOrdered(reorder(ordered, result.source.index, result.destination.index))
   }
 
-  const actions = canPlay ? (
-    <div className={styles.actions}>
-      <Button onClick={handlePlay}>Play</Button>
-      <Button onClick={sortHand}>Sort</Button>
-      <Button onClick={handlePass}>Pass</Button>
-    </div>
-  ) : null
+  const actions: Array<[string, () => void]> = isCurrent
+    ? [
+        ['Play', handlePlay],
+        ['Sort', sortHand],
+        ['Pass', handlePass],
+      ]
+    : [['Sort', sortHand]]
 
-  if (!isPlayer) {
+  if (isPlayer) {
     return (
       <div className={classNames.join(' ')}>
         <h2>
           {name}
-          {actions}
+          <div className={styles.actions}>
+            {actions.map(([label, func]) => (
+              <Button onClick={func}>{label}</Button>
+            ))}
+          </div>
         </h2>
+        <DragDropContext onDragEnd={handleDragEnd}>
+          <Droppable droppableId="droppable" direction="horizontal">
+            {(provided) => (
+              <div className={styles.handCards} ref={provided.innerRef}>
+                {ordered.map((card, i) => (
+                  <Draggable key={card} draggableId={card} index={i}>
+                    {(...draggable) => (
+                      <BoardCard
+                        card={card}
+                        onCardSelect={handleCardSelect}
+                        isActive={selected.includes(card)}
+                        draggable={draggable}
+                      />
+                    )}
+                  </Draggable>
+                ))}
+              </div>
+            )}
+          </Droppable>
+        </DragDropContext>
+      </div>
+    )
+  } else {
+    return (
+      <div className={classNames.join(' ')}>
+        <h2>{name}</h2>
         <div className={styles.handCards}>
           {cards.map((card, i) => (
             <BoardCard key={i} card={card} />
@@ -106,35 +136,6 @@ export default function BoardHand({
       </div>
     )
   }
-
-  return (
-    <div className={classNames.join(' ')}>
-      <h2>
-        {name}
-        {actions}
-      </h2>
-      <DragDropContext onDragEnd={handleDragEnd}>
-        <Droppable droppableId="droppable" direction="horizontal">
-          {(provided) => (
-            <div className={styles.handCards} ref={provided.innerRef}>
-              {ordered.map((card, i) => (
-                <Draggable key={card} draggableId={card} index={i}>
-                  {(...draggable) => (
-                    <BoardCard
-                      card={card}
-                      onCardSelect={handleCardSelect}
-                      isActive={selected.includes(card)}
-                      draggable={draggable}
-                    />
-                  )}
-                </Draggable>
-              ))}
-            </div>
-          )}
-        </Droppable>
-      </DragDropContext>
-    </div>
-  )
 }
 
 function reorder(list: any[], startIndex: number, endIndex: number) {
