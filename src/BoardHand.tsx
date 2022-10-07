@@ -95,9 +95,9 @@ export default function BoardHand({
 
   const actions = isCurrent ? (
     <div className={styles.actions}>
-      <Button onClick={handlePlay} disabled={!isPlayable(selected)}>
+      <button onClick={handlePlay} disabled={!isPlayable(selected)}>
         Play
-      </Button>
+      </button>
       <Button onClick={sortHand}>Sort</Button>
       <Button onClick={handlePass}>Pass</Button>
     </div>
