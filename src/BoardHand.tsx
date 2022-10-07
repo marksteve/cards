@@ -90,7 +90,8 @@ export default function BoardHand({
   }
 
   function isPlayable(selection: CardStr[]) {
-    return isValidMove(hand, lastPlay, hasStarted, currentPlayer, selection)
+    const play = Play.fromString(selection, currentPlayer)
+    return isValidMove(hand, lastPlay, hasStarted, play)
   }
 
   const actions = isCurrent ? (
