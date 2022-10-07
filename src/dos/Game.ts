@@ -192,6 +192,48 @@ export class Play {
   }
 }
 
+export const isValidMove = (
+  hand: CardStr[],
+  lastPlay: Play | null | undefined,
+  hasStarted: boolean | undefined,
+  currentPlayer: number | undefined,
+  cards: CardStr[]
+) => {
+  const play = Play.fromString(cards, currentPlayer)
+  const playString = play.cards.map(String)
+
+  if (play.value === null) {
+    console.log('Invalid move')
+    return false
+  }
+
+  if (!playString.every((c) => hand.includes(c))) {
+    console.log('Play not from hand', { hand, play })
+    return false
+  }
+
+  if (lastPlay === null) {
+    if (!hasStarted) {
+      const isLowestInPlay = playString.includes(String(Card.lowest))
+      if (!isLowestInPlay) {
+        console.log(`First move not ${Card.lowest}`)
+        return false
+      }
+    }
+  } else {
+    if (lastPlay?.cards.length !== play.cards.length) {
+      console.log('Play not same length as last play')
+      return false
+    }
+    if (play.value < lastPlay.value!) {
+      console.log('Play value lower than last play')
+      return false
+    }
+  }
+
+  return true
+}
+
 export type State = {
   players: Record<number, CardStr[]>
   remaining: Record<number, number>
@@ -249,40 +291,18 @@ export const Dos: Game<State> = {
     play: {
       move: (G: State, ctx: Ctx, cards: CardStr[]) => {
         const hand = G.players[toInt(ctx.currentPlayer)]
-        const play = Play.fromString(cards, toInt(ctx.currentPlayer))
+        const currentPlayerInt = toInt(ctx.currentPlayer)
+
+        if (
+          !isValidMove(hand, G.lastPlay, G.hasStarted, currentPlayerInt, cards)
+        ) {
+          return INVALID_MOVE
+        }
+
+        G.hasStarted = true
+
+        const play = Play.fromString(cards, currentPlayerInt)
         const playString = play.cards.map(String)
-        const playValue = play.value
-
-        if (playValue === null) {
-          console.log('Invalid move')
-          return INVALID_MOVE
-        }
-
-        if (!playString.every((c) => hand.includes(c))) {
-          console.log('Play not from hand', { hand, play })
-          return INVALID_MOVE
-        }
-
-        if (G.lastPlay === null) {
-          if (!G.hasStarted) {
-            const isLowestInPlay = playString.includes(String(Card.lowest))
-            if (!isLowestInPlay) {
-              console.log(`First move not ${Card.lowest}`)
-              return INVALID_MOVE
-            } else {
-              G.hasStarted = true
-            }
-          }
-        } else {
-          if (G.lastPlay?.cards.length !== play.cards.length) {
-            console.log('Play not same length as last play')
-            return INVALID_MOVE
-          }
-          if (playValue < G.lastPlay.value!) {
-            console.log('Play value lower than last play')
-            return INVALID_MOVE
-          }
-        }
 
         // Remove played cards from hand and place in discard pile
         const discard = playString.map((card) => {
@@ -293,11 +313,11 @@ export const Dos: Game<State> = {
         G.lastPlay = play
 
         if (hand.length === 0) {
-          G.winners.push(toInt(ctx.currentPlayer))
+          G.winners.push(currentPlayerInt)
           G.lastPlay = null
         }
 
-        G.remaining[toInt(ctx.currentPlayer)] = hand.length
+        G.remaining[currentPlayerInt] = hand.length
 
         ctx.events?.endTurn!()
       },

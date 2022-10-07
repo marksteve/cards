@@ -68,7 +68,7 @@ export default function Lobby() {
   }
 
   const handleKeyPress = ({ key }: KeyboardEvent) => {
-    if (key == 'Enter') {
+    if (key === 'Enter') {
       handleCreate()
     }
   }
@@ -180,7 +180,7 @@ function MatchLobby({ matchID, lobbyClient }: MatchLobbyProps) {
   }
 
   const handleKeyPress = ({ key }: KeyboardEvent) => {
-    if (key == 'Enter') {
+    if (key === 'Enter') {
       handleJoin()
     }
   }
