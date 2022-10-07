@@ -83,9 +83,13 @@ export default function BoardHand({
     setOrdered(reorder(ordered, result.source.index, result.destination.index))
   }
 
+  function isPlayable(selection) {
+    // todo
+  }
+
   const actions: Array<[string, () => void]> = isCurrent
     ? [
-        ['Play', handlePlay],
+        ['Play', handlePlay, isPlayable(selection)],
         ['Sort', sortHand],
         ['Pass', handlePass],
       ]
@@ -97,8 +101,10 @@ export default function BoardHand({
         <h2>
           {name}
           <div className={styles.actions}>
-            {actions.map(([label, func]) => (
-              <Button onClick={func}>{label}</Button>
+            {actions.map(([label, func, isEnabled]) => (
+              <Button onClick={func} disabled={!isEnabled}>
+                {label}
+              </Button>
             ))}
           </div>
         </h2>
