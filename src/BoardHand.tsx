@@ -5,27 +5,33 @@ import {
   Droppable,
   DropResult,
 } from 'react-beautiful-dnd'
-import { Card } from './dos/Game'
+import { Card, Play, isValidMove } from './dos/Game'
 import BoardCard from './BoardCard'
 import styles from './BoardHand.module.css'
 import Button from './Button'
 
 type BoardHandProps = {
+  hand: CardStr[]
   name: string
-  cards: CardStr[]
   onPlay?: (cards: CardStr[]) => void
   onPass?: () => void
   isCurrent?: boolean
   isPlayer?: boolean
+  lastPlay?: Play | null
+  hasStarted?: boolean
+  currentPlayer?: number
 }
 
 export default function BoardHand({
-  cards,
+  hand,
   name,
   onPlay,
   onPass,
   isCurrent,
   isPlayer,
+  lastPlay,
+  hasStarted,
+  currentPlayer,
 }: BoardHandProps) {
   const classNames = [styles.hand]
   isCurrent && classNames.push(styles.handCurrent)
@@ -34,11 +40,11 @@ export default function BoardHand({
   const canPlay = isCurrent && isPlayer
 
   const [selected, setSelected] = useState<CardStr[]>([])
-  const [ordered, setOrdered] = useState<CardStr[]>(cards)
+  const [ordered, setOrdered] = useState<CardStr[]>(hand)
 
   useEffect(() => {
-    setOrdered((ordered) => ordered.filter((card) => cards.includes(card)))
-  }, [cards, setOrdered])
+    setOrdered((ordered) => ordered.filter((card) => hand.includes(card)))
+  }, [hand, setOrdered])
 
   function sortHand() {
     setOrdered([
@@ -83,24 +89,31 @@ export default function BoardHand({
     setOrdered(reorder(ordered, result.source.index, result.destination.index))
   }
 
-  const actions: Array<[string, () => void]> = isCurrent
-    ? [
-        ['Play', handlePlay],
-        ['Sort', sortHand],
-        ['Pass', handlePass],
-      ]
-    : [['Sort', sortHand]]
+  function isPlayable(selection: CardStr[]) {
+    const play = Play.fromString(selection, currentPlayer)
+    return isValidMove(hand, lastPlay, hasStarted, play)
+  }
+
+  const actions = isCurrent ? (
+    <div className={styles.actions}>
+      <button onClick={handlePlay} disabled={!isPlayable(selected)}>
+        Play
+      </button>
+      <Button onClick={sortHand}>Sort</Button>
+      <Button onClick={handlePass}>Pass</Button>
+    </div>
+  ) : (
+    <div className={styles.actions}>
+      <Button onClick={sortHand}>Sort</Button>
+    </div>
+  )
 
   if (isPlayer) {
     return (
       <div className={classNames.join(' ')}>
         <h2>
           {name}
-          <div className={styles.actions}>
-            {actions.map(([label, func]) => (
-              <Button onClick={func}>{label}</Button>
-            ))}
-          </div>
+          {actions}
         </h2>
         <DragDropContext onDragEnd={handleDragEnd}>
           <Droppable droppableId="droppable" direction="horizontal">
@@ -129,7 +142,7 @@ export default function BoardHand({
       <div className={classNames.join(' ')}>
         <h2>{name}</h2>
         <div className={styles.handCards}>
-          {cards.map((card, i) => (
+          {hand.map((card, i) => (
             <BoardCard key={i} card={card} />
           ))}
         </div>

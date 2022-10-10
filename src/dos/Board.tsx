@@ -59,12 +59,15 @@ export default function Board({
       <OtherHands hands={otherHands} currentPlayer={currentPlayer} />
       <Mat discarded={discarded} lastPlayer={playerName(lastPlay?.player!)} />
       <BoardHand
-        cards={players[player]}
+        hand={players[player]}
         name={matchData![player].name!}
         onPlay={handlePlay}
         onPass={handlePass}
         isCurrent={currentPlayer === player}
         isPlayer
+        lastPlay={G.lastPlay}
+        hasStarted={G.hasStarted}
+        currentPlayer={toInt(ctx.currentPlayer)}
       />
       <GameOver
         gameover={ctx.gameover}
@@ -91,7 +94,7 @@ function OtherHands({ hands, currentPlayer }: OtherHandsProps) {
         <BoardHand
           key={hand.player}
           name={hand.name}
-          cards={hand.cards}
+          hand={hand.cards}
           isCurrent={currentPlayer === hand.player}
         />
       ))}

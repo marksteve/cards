@@ -35,7 +35,7 @@ export default function BoardCard({
   }, [card, onCardSelect])
 
   const toggleSkin = () => {
-    const newSkin = skin == 'cute' ? 'classic' : 'cute'
+    const newSkin = skin === 'cute' ? 'classic' : 'cute'
     writeStorage('skin', newSkin)
     setSkin(newSkin)
   }
