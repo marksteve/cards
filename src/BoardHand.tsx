@@ -94,13 +94,19 @@ export default function BoardHand({
     return isValidMove(hand, lastPlay, hasStarted, play)
   }
 
+  function canPass() {
+    return lastPlay !== null
+  }
+
   const actions = isCurrent ? (
     <div className={styles.actions}>
       <button onClick={handlePlay} disabled={!isPlayable(selected)}>
         Play
       </button>
       <Button onClick={sortHand}>Sort</Button>
-      <Button onClick={handlePass}>Pass</Button>
+      <Button onClick={handlePass} disabled={!canPass()}>
+        Pass
+      </Button>
     </div>
   ) : (
     <div className={styles.actions}>
