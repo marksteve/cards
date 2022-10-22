@@ -200,6 +200,7 @@ export class Play {
 
 export const isValidMove = (
   hand: CardStr[],
+  isLeader: boolean,
   lastPlay: Play | null | undefined,
   hasStarted: boolean | undefined,
   play: Play
@@ -216,7 +217,7 @@ export const isValidMove = (
     return false
   }
 
-  if (!lastPlay) {
+  if (isLeader) {
     if (!hasStarted) {
       const isLowestInPlay = playString.includes(String(Card.lowest))
       if (!isLowestInPlay) {
@@ -246,7 +247,7 @@ export const isValidMove = (
 export type State = {
   players: Record<number, CardStr[]>
   remaining: Record<number, number>
-  firstTurn: number
+  leader: number
   hasStarted: boolean
   discarded: CardStr[][]
   lastPlay: Play | null
@@ -265,13 +266,13 @@ export const Dos: Game<State> = {
     const remaining: Record<number, number> = {}
 
     // Deal cards
-    let firstTurn = 0
+    let leader = 0
     let player = 0
     while (deck.length > 0) {
       player = Object.keys(players).length
       const hand = deck.splice(0, 13)
       if (hand.some((c) => c.value === Card.lowest.value)) {
-        firstTurn = player
+        leader = player
       }
       players[player] = hand.map(String)
       remaining[player] = hand.length
@@ -280,7 +281,7 @@ export const Dos: Game<State> = {
     return {
       players,
       remaining,
-      firstTurn,
+      leader,
       hasStarted: false,
       discarded: [],
       lastPlay: null,
@@ -291,8 +292,8 @@ export const Dos: Game<State> = {
   turn: {
     moveLimit: 1,
     order: {
-      first: (G, ctx) => G.firstTurn,
-      next: getNext,
+      first: (G, ctx) => G.leader,
+      next: getNextPlayer,
     },
   },
 
@@ -301,9 +302,10 @@ export const Dos: Game<State> = {
       move: (G: State, ctx: Ctx, cards: CardStr[]) => {
         const currentPlayerInt = toInt(ctx.currentPlayer)
         const hand = G.players[currentPlayerInt]
+        const isLeader = G.leader === ctx.playOrderPos
         const play = Play.fromString(cards, currentPlayerInt)
 
-        if (!isValidMove(hand, G.lastPlay, G.hasStarted, play)) {
+        if (!isValidMove(hand, isLeader, G.lastPlay, G.hasStarted, play)) {
           return INVALID_MOVE
         }
 
@@ -319,9 +321,11 @@ export const Dos: Game<State> = {
 
         G.lastPlay = play
 
-        if (hand.length === 0) {
+        if (hand.length) {
+          G.leader = currentPlayerInt
+        } else {
           G.winners.push(currentPlayerInt)
-          G.lastPlay = null
+          G.leader = getNextPlayer(G, ctx)
         }
 
         G.remaining[currentPlayerInt] = hand.length
@@ -331,13 +335,7 @@ export const Dos: Game<State> = {
       client: false,
     },
     pass: {
-      move: (G, ctx) => {
-        if (G.lastPlay?.player === getNext(G, ctx)) {
-          // Others passed
-          G.lastPlay = null
-        }
-        ctx.events?.endTurn!()
-      },
+      move: (G, ctx) => ctx.events?.endTurn!(),
       client: false,
     },
   },
@@ -347,17 +345,10 @@ export const Dos: Game<State> = {
   },
 }
 
-function getNext(G: State, ctx: Ctx) {
-  let i = 1
-  while (true) {
-    const nextPlayer = (ctx.playOrderPos + i) % ctx.numPlayers
-    if (G.winners.includes(nextPlayer)) {
-      console.log(`Skipping player ${nextPlayer}`)
-      i++
-    } else {
-      return nextPlayer
-    }
-  }
+function getNextPlayer(G: State, ctx: Ctx): number {
+  return [1, 2, 3]
+    .map((i) => (ctx.playOrderPos + i) % ctx.numPlayers)
+    .filter((player) => !G.winners.includes(player))[0]
 }
 
 export default Client({

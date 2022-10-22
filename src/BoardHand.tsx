@@ -16,6 +16,7 @@ type BoardHandProps = {
   onPlay: (cards: CardStr[]) => void
   onPass: () => void
   isCurrent: boolean
+  isLeader: boolean
   lastPlay: Play | null
   hasStarted: boolean
   currentPlayer: number
@@ -27,6 +28,7 @@ export default function BoardHand({
   onPlay,
   onPass,
   isCurrent,
+  isLeader,
   lastPlay,
   hasStarted,
   currentPlayer,
@@ -81,12 +83,10 @@ export default function BoardHand({
 
   function isPlayable(selection: CardStr[]) {
     const play = Play.fromString(selection, currentPlayer)
-    return isValidMove(hand, lastPlay, hasStarted, play)
+    return isValidMove(hand, isLeader, lastPlay, hasStarted, play)
   }
 
-  function canPass() {
-    return lastPlay !== null
-  }
+  const canPass = !isLeader
 
   const actions = isCurrent ? (
     <div className={styles.actions}>
@@ -94,7 +94,7 @@ export default function BoardHand({
         Play
       </button>
       <Button onClick={sortHand}>Sort</Button>
-      <Button onClick={handlePass} disabled={!canPass()}>
+      <Button onClick={handlePass} disabled={!canPass}>
         Pass
       </Button>
     </div>

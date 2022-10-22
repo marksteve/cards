@@ -65,6 +65,7 @@ export default function Board({
         onPlay={handlePlay}
         onPass={handlePass}
         isCurrent={currentPlayer === player}
+        isLeader={G.leader === ctx.playOrderPos}
         lastPlay={G.lastPlay}
         hasStarted={G.hasStarted}
         currentPlayer={toInt(ctx.currentPlayer)}
