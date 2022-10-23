@@ -2,7 +2,7 @@ import { LobbyClient } from 'boardgame.io/client'
 import { BoardProps } from 'boardgame.io/react'
 import { range } from 'd3-array'
 import firebase from 'firebase/app'
-import React from 'react'
+import React, { useEffect } from 'react'
 import BoardCard from '../BoardCard'
 import BoardHand from '../BoardHand'
 import OtherHand from '../OtherHand'
@@ -20,6 +20,11 @@ export default function Board({
   matchData,
   matchID,
 }: BoardProps<State>) {
+  const onGameStart = () => {
+    new Audio('/assets/audio/shuffle.mp3').play()
+  }
+  useEffect(onGameStart, [])
+
   const { players, remaining, discarded, lastPlay } = G
 
   const currentPlayer = toInt(ctx.currentPlayer)
@@ -35,13 +40,13 @@ export default function Board({
       cards: Array(remaining[p]).fill('B1'),
     }))
 
-  function handlePlay(cards: CardStr[]) {
-    moves.play(cards)
-  }
-
-  function handlePass() {
-    moves.pass()
-  }
+  useEffect(() => {
+    const previousPlayer =
+      (toInt(ctx.currentPlayer) + ctx.numPlayers - 1) % ctx.numPlayers
+    const previousMove =
+      G.lastPlay?.player! === previousPlayer ? 'play' : 'pass'
+    new Audio(`/assets/audio/${previousMove}.mp3`).play()
+  }, [ctx.currentPlayer])
 
   async function handlePlayAgain() {
     const lobbyClient = new LobbyClient({
@@ -62,8 +67,8 @@ export default function Board({
       <BoardHand
         hand={players[player]}
         name={matchData![player].name!}
-        onPlay={handlePlay}
-        onPass={handlePass}
+        onPlay={moves.play}
+        onPass={moves.pass}
         isCurrent={currentPlayer === player}
         isLeader={G.leader === ctx.playOrderPos}
         lastPlay={G.lastPlay}
