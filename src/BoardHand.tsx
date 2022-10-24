@@ -45,6 +45,7 @@ export default function BoardHand({
   }, [hand, setOrdered])
 
   function sortHand() {
+    new Audio('/assets/audio/sort.mp3').play()
     setOrdered([
       ...ordered.sort((c1, c2) => {
         const [v1, v2] = [c1, c2].map((x) => Card.fromString(x).value)
@@ -57,11 +58,15 @@ export default function BoardHand({
     if (!isCurrent) {
       return
     }
-    setSelected((selected) =>
-      selected.includes(card)
-        ? selected.filter((c) => c !== card)
-        : [...selected, card]
-    )
+    setSelected((selected) => {
+      if (selected.includes(card)) {
+        new Audio('/assets/audio/deselect.mp3').play()
+        return selected.filter((c) => c !== card)
+      } else {
+        new Audio('/assets/audio/select.mp3').play()
+        return [...selected, card]
+      }
+    })
   }
 
   function handlePlay() {
