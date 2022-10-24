@@ -332,9 +332,6 @@ export const Dos: Game<State> = {
     },
     pass: {
       move: (G, ctx) => {
-        if (G.lastPlay === null) {
-          return INVALID_MOVE
-        }
         if (G.lastPlay?.player === getNext(G, ctx)) {
           // Others passed
           G.lastPlay = null

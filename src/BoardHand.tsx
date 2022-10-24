@@ -13,13 +13,12 @@ import Button from './Button'
 type BoardHandProps = {
   hand: CardStr[]
   name: string
-  onPlay?: (cards: CardStr[]) => void
-  onPass?: () => void
-  isCurrent?: boolean
-  isPlayer?: boolean
-  lastPlay?: Play | null
-  hasStarted?: boolean
-  currentPlayer?: number
+  onPlay: (cards: CardStr[]) => void
+  onPass: () => void
+  isCurrent: boolean
+  lastPlay: Play | null
+  hasStarted: boolean
+  currentPlayer: number
 }
 
 export default function BoardHand({
@@ -28,16 +27,13 @@ export default function BoardHand({
   onPlay,
   onPass,
   isCurrent,
-  isPlayer,
   lastPlay,
   hasStarted,
   currentPlayer,
 }: BoardHandProps) {
   const classNames = [styles.hand]
   isCurrent && classNames.push(styles.handCurrent)
-  isPlayer && classNames.push(styles.handPlayer)
-
-  const canPlay = isCurrent && isPlayer
+  classNames.push(styles.handPlayer)
 
   const [selected, setSelected] = useState<CardStr[]>([])
   const [ordered, setOrdered] = useState<CardStr[]>(hand)
@@ -56,7 +52,7 @@ export default function BoardHand({
   }
 
   function handleCardSelect(card: CardStr) {
-    if (!canPlay) {
+    if (!isCurrent) {
       return
     }
     setSelected((selected) =>
@@ -67,17 +63,11 @@ export default function BoardHand({
   }
 
   function handlePlay() {
-    if (!canPlay || !onPlay) {
-      return
-    }
     onPlay(selected)
     setSelected([])
   }
 
   function handlePass() {
-    if (!canPlay || !onPass) {
-      return
-    }
     onPass()
     setSelected([])
   }
@@ -94,13 +84,19 @@ export default function BoardHand({
     return isValidMove(hand, lastPlay, hasStarted, play)
   }
 
+  function canPass() {
+    return lastPlay !== null
+  }
+
   const actions = isCurrent ? (
     <div className={styles.actions}>
       <button onClick={handlePlay} disabled={!isPlayable(selected)}>
         Play
       </button>
       <Button onClick={sortHand}>Sort</Button>
-      <Button onClick={handlePass}>Pass</Button>
+      <Button onClick={handlePass} disabled={!canPass()}>
+        Pass
+      </Button>
     </div>
   ) : (
     <div className={styles.actions}>
@@ -108,47 +104,34 @@ export default function BoardHand({
     </div>
   )
 
-  if (isPlayer) {
-    return (
-      <div className={classNames.join(' ')}>
-        <h2>
-          {name}
-          {actions}
-        </h2>
-        <DragDropContext onDragEnd={handleDragEnd}>
-          <Droppable droppableId="droppable" direction="horizontal">
-            {(provided) => (
-              <div className={styles.handCards} ref={provided.innerRef}>
-                {ordered.map((card, i) => (
-                  <Draggable key={card} draggableId={card} index={i}>
-                    {(...draggable) => (
-                      <BoardCard
-                        card={card}
-                        onCardSelect={handleCardSelect}
-                        isActive={selected.includes(card)}
-                        draggable={draggable}
-                      />
-                    )}
-                  </Draggable>
-                ))}
-              </div>
-            )}
-          </Droppable>
-        </DragDropContext>
-      </div>
-    )
-  } else {
-    return (
-      <div className={classNames.join(' ')}>
-        <h2>{name}</h2>
-        <div className={styles.handCards}>
-          {hand.map((card, i) => (
-            <BoardCard key={i} card={card} />
-          ))}
-        </div>
-      </div>
-    )
-  }
+  return (
+    <div className={classNames.join(' ')}>
+      <h2>
+        {name}
+        {actions}
+      </h2>
+      <DragDropContext onDragEnd={handleDragEnd}>
+        <Droppable droppableId="droppable" direction="horizontal">
+          {(provided) => (
+            <div className={styles.handCards} ref={provided.innerRef}>
+              {ordered.map((card, i) => (
+                <Draggable key={card} draggableId={card} index={i}>
+                  {(...draggable) => (
+                    <BoardCard
+                      card={card}
+                      onCardSelect={handleCardSelect}
+                      isActive={selected.includes(card)}
+                      draggable={draggable}
+                    />
+                  )}
+                </Draggable>
+              ))}
+            </div>
+          )}
+        </Droppable>
+      </DragDropContext>
+    </div>
+  )
 }
 
 function reorder(list: any[], startIndex: number, endIndex: number) {

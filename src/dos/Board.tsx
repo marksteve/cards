@@ -5,6 +5,7 @@ import firebase from 'firebase/app'
 import React from 'react'
 import BoardCard from '../BoardCard'
 import BoardHand from '../BoardHand'
+import OtherHand from '../OtherHand'
 import Button from '../Button'
 import { toInt } from '../utils'
 import styles from './Board.module.css'
@@ -64,7 +65,6 @@ export default function Board({
         onPlay={handlePlay}
         onPass={handlePass}
         isCurrent={currentPlayer === player}
-        isPlayer
         lastPlay={G.lastPlay}
         hasStarted={G.hasStarted}
         currentPlayer={toInt(ctx.currentPlayer)}
@@ -91,7 +91,7 @@ function OtherHands({ hands, currentPlayer }: OtherHandsProps) {
   return (
     <>
       {hands.map((hand) => (
-        <BoardHand
+        <OtherHand
           key={hand.player}
           name={hand.name}
           hand={hand.cards}
