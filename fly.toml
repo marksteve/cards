@@ -9,7 +9,7 @@ kill_timeout = 5
 app = "npm run server:start"
 
 [build]
-  builder = "heroku/buildpacks:20"
+  builder = "gcr.io/paketo-buildpacks/builder:latest"
 
 [env]
   PORT = "8080"
