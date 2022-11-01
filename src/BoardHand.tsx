@@ -93,6 +93,9 @@ export default function BoardHand({
 
   const canPass = !isLeader
 
+  const helpLink =
+    'https://docs.google.com/document/d/1kDK82b4Chz7WpHeMvVZk-vpn6iFWdGu72lG_dkYfRb8/edit?usp=sharing'
+
   const actions = isCurrent ? (
     <div className={styles.actions}>
       <button onClick={handlePlay} disabled={!isPlayable(selected)}>
@@ -102,10 +105,16 @@ export default function BoardHand({
       <Button onClick={handlePass} disabled={!canPass}>
         Pass
       </Button>
+      <a href={helpLink} target="_blank">
+        <Button>Help!</Button>
+      </a>
     </div>
   ) : (
     <div className={styles.actions}>
       <Button onClick={sortHand}>Sort</Button>
+      <a href={helpLink} target="_blank">
+        <Button>Help!</Button>
+      </a>
     </div>
   )
 
