@@ -46,4 +46,5 @@
   box-shadow: 0 0 0 6px var(--accent);
   background: var(--accent);
   border-radius: 1px;
+  margin-top: -20px;
 }
