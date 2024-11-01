@@ -3,7 +3,7 @@ help: ## Display this help message
 	@perl -nle'print $& if m{^[a-zA-Z_-]+:.*?## .*$$}' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m  %-25s\033[0m %s\n", $$1, $$2}'
 
 node_modules: package.json ## Install dependencies
-	npm node_modules
+	npm install
 
 test: node_modules ## Run automated tests
 	npm test
