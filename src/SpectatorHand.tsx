@@ -2,15 +2,22 @@ import React from 'react'
 import BoardCard from './BoardCard'
 import styles from './BoardHand.module.css'
 
-type OtherHandProps = {
+type SpectatorHandProps = {
   name: string
-  hand: CardStr[]
+  handCount: number
   isCurrent: boolean
 }
 
-export default function OtherHand({ name, hand, isCurrent }: OtherHandProps) {
+export default function SpectatorHand({
+  name,
+  handCount,
+  isCurrent,
+}: SpectatorHandProps) {
   const classNames = [styles.hand]
   isCurrent && classNames.push(styles.handCurrent)
+  classNames.push(styles.handPlayer)
+
+  const hand = Array(handCount).fill('B1')
 
   return (
     <div className={classNames.join(' ')}>

@@ -5,6 +5,7 @@ import firebase from 'firebase/app'
 import React, { useEffect } from 'react'
 import BoardCard from '../BoardCard'
 import BoardHand from '../BoardHand'
+import SpectatorHand from '../SpectatorHand'
 import OtherHand from '../OtherHand'
 import Button from '../Button'
 import { toInt } from '../utils'
@@ -28,7 +29,8 @@ export default function Board({
   const { players, remaining, discarded, lastPlay } = G
 
   const currentPlayer = toInt(ctx.currentPlayer)
-  const player = toInt(playerID)
+  const isSpectator = playerID === ''
+  const player = toInt(playerID) || 0
   const playerName = (p: number) => (p !== undefined ? matchData![p].name! : '')
 
   const start = (player + 1) % ctx.numPlayers
@@ -64,17 +66,25 @@ export default function Board({
     <div className={styles.board}>
       <OtherHands hands={otherHands} currentPlayer={currentPlayer} />
       <Mat discarded={discarded} lastPlayer={playerName(lastPlay?.player!)} />
-      <BoardHand
-        hand={players[player]}
-        name={matchData![player].name!}
-        onPlay={moves.play}
-        onPass={moves.pass}
-        isCurrent={currentPlayer === player}
-        isLeader={G.leader === ctx.playOrderPos}
-        lastPlay={G.lastPlay}
-        hasStarted={G.hasStarted}
-        currentPlayer={toInt(ctx.currentPlayer)}
-      />
+      {isSpectator ? (
+        <SpectatorHand
+          name={matchData![player].name!}
+          handCount={remaining[player]}
+          isCurrent={currentPlayer === player}
+        />
+      ) : (
+        <BoardHand
+          hand={players[player]}
+          name={matchData![player].name!}
+          onPlay={moves.play}
+          onPass={moves.pass}
+          isCurrent={currentPlayer === player}
+          isLeader={G.leader === ctx.playOrderPos}
+          lastPlay={G.lastPlay}
+          hasStarted={G.hasStarted}
+          currentPlayer={toInt(ctx.currentPlayer)}
+        />
+      )}
       <GameOver
         gameover={ctx.gameover}
         winners={G.winners.map(playerName)}
