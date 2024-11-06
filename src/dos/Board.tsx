@@ -48,7 +48,7 @@ export default function Board({
     const previousMove =
       G.lastPlay?.player! === previousPlayer ? 'play' : 'pass'
     new Audio(`/assets/audio/${previousMove}.mp3`).play()
-  }, [ctx.currentPlayer])
+  })
 
   async function handlePlayAgain() {
     const lobbyClient = new LobbyClient({

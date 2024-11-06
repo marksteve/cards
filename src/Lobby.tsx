@@ -13,7 +13,6 @@ import React, {
 import { useDocumentData } from 'react-firebase-hooks/firestore'
 import Button from './Button'
 import styles from './Lobby.module.css'
-import { toInt } from './utils'
 
 const GAME_ID = process.env.REACT_APP_GAME_ID!
 const GAME_NAME = process.env.REACT_APP_GAME_NAME
@@ -135,7 +134,7 @@ function MatchLobby({ matchID, lobbyClient }: MatchLobbyProps) {
     if (match?.nextMatchID) {
       window.location.href = `/${match.nextMatchID}`
     }
-  }, [match])
+  })
 
   if (!match) {
     return null

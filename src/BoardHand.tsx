@@ -105,14 +105,14 @@ export default function BoardHand({
       <Button onClick={handlePass} disabled={!canPass}>
         Pass
       </Button>
-      <a href={helpLink} target="_blank">
+      <a href={helpLink} target="_blank" rel="noreferrer">
         <Button>Help!</Button>
       </a>
     </div>
   ) : (
     <div className={styles.actions}>
       <Button onClick={sortHand}>Sort</Button>
-      <a href={helpLink} target="_blank">
+      <a href={helpLink} target="_blank" rel="noreferrer">
         <Button>Help!</Button>
       </a>
     </div>
