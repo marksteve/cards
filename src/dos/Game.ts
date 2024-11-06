@@ -8,7 +8,6 @@ import { toInt } from '../utils'
 
 export const GAME_ID = 'dos'
 
-const NUM_PLAYERS = 4
 const RANKS = '3456789TJQKA2'
 const SUITS = 'CSHD'
 
@@ -256,8 +255,8 @@ export type State = {
 
 export const Dos: Game<State> = {
   name: GAME_ID,
-  minPlayers: NUM_PLAYERS,
-  maxPlayers: NUM_PLAYERS,
+  minPlayers: 3,
+  maxPlayers: 4,
   playerView: PlayerView.STRIP_SECRETS,
 
   setup: (ctx): State => {
@@ -353,7 +352,6 @@ function getNextPlayer(G: State, ctx: Ctx): number {
 
 export default Client({
   game: Dos,
-  numPlayers: NUM_PLAYERS,
   board: React.lazy(() => import('./Board')),
   multiplayer: SocketIO({ server: process.env.REACT_APP_GAME_SERVER }),
   debug: false,
