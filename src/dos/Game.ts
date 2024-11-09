@@ -231,13 +231,11 @@ export const isValidMove = (
       return false
     }
     const lastPlayValue = getPlayValue(lastPlay?.cards)
-    if (lastPlayValue === null) {
-      console.error(`Last play was invalid: ${lastPlay}`)
-    } else {
-      if (play.value < lastPlayValue) {
-        console.log('Play value lower than last play')
-        return false
-      }
+    if (!lastPlayValue) {
+      console.error(`Last play was invalid: ${JSON.stringify(lastPlay)}`)
+    } else if (play.value < lastPlayValue) {
+      console.log('Play value lower than last play')
+      return false
     }
   }
 
