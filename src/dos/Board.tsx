@@ -63,7 +63,12 @@ export default function Board({
   }
 
   return (
-    <div className={styles.board}>
+    <div
+      className={styles.board}
+      style={{
+        gridTemplateColumns: `repeat(${ctx.numPlayers - 1}, 1fr)`,
+      }}
+    >
       <OtherHands hands={otherHands} currentPlayer={currentPlayer} />
       <Mat discarded={discarded} lastPlayer={playerName(lastPlay?.player!)} />
       {isSpectator ? (
