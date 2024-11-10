@@ -10,7 +10,7 @@ export const GAME_ID = 'dos'
 
 const RANKS = '3456789TJQKA2'
 const SUITS = 'CSHD'
-const NUM_CARDS = RANKS.length * SUITS.length
+export const NUM_CARDS = RANKS.length * SUITS.length
 
 enum Combi {
   None,

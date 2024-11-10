@@ -10,7 +10,7 @@ import OtherHand from '../OtherHand'
 import Button from '../Button'
 import { toInt } from '../utils'
 import styles from './Board.module.css'
-import { GAME_ID, State } from './Game'
+import { GAME_ID, State, NUM_CARDS } from './Game'
 
 export default function Board({
   G,
@@ -27,7 +27,7 @@ export default function Board({
   useEffect(onGameStart, [])
 
   const { players, remaining, discarded, lastPlay } = G
-  const maxHandCards = 52 / ctx.numPlayers
+  const maxHandCards = NUM_CARDS / ctx.numPlayers
 
   const currentPlayer = toInt(ctx.currentPlayer)
   const isSpectator = playerID === ''
