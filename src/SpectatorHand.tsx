@@ -6,12 +6,14 @@ type SpectatorHandProps = {
   name: string
   handCount: number
   isCurrent: boolean
+  maxHandCards: number
 }
 
 export default function SpectatorHand({
   name,
   handCount,
   isCurrent,
+  maxHandCards,
 }: SpectatorHandProps) {
   const classNames = [styles.hand]
   isCurrent && classNames.push(styles.handCurrent)
@@ -22,7 +24,12 @@ export default function SpectatorHand({
   return (
     <div className={classNames.join(' ')}>
       <h2>{name}</h2>
-      <div className={styles.handCards}>
+      <div
+        className={styles.handCards}
+        style={{
+          gridTemplateColumns: `repeat(auto-fill, calc(100% / ${maxHandCards})))`,
+        }}
+      >
         {hand.map((card, i) => (
           <BoardCard key={i} card={card} />
         ))}
