@@ -6,16 +6,27 @@ type OtherHandProps = {
   name: string
   hand: CardStr[]
   isCurrent: boolean
+  maxHandCards: number
 }
 
-export default function OtherHand({ name, hand, isCurrent }: OtherHandProps) {
+export default function OtherHand({
+  name,
+  hand,
+  isCurrent,
+  maxHandCards,
+}: OtherHandProps) {
   const classNames = [styles.hand]
   isCurrent && classNames.push(styles.handCurrent)
 
   return (
     <div className={classNames.join(' ')}>
       <h2>{name}</h2>
-      <div className={styles.handCards}>
+      <div
+        className={styles.handCards}
+        style={{
+          gridTemplateColumns: `repeat(auto-fill, calc(100% / ${maxHandCards})))`,
+        }}
+      >
         {hand.map((card, i) => (
           <BoardCard key={i} card={card} />
         ))}

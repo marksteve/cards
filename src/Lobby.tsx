@@ -13,12 +13,10 @@ import React, {
 import { useDocumentData } from 'react-firebase-hooks/firestore'
 import Button from './Button'
 import styles from './Lobby.module.css'
-import { toInt } from './utils'
 
 const GAME_ID = process.env.REACT_APP_GAME_ID!
 const GAME_NAME = process.env.REACT_APP_GAME_NAME
 const GAME_DESCRIPTION = process.env.REACT_APP_GAME_DESCRIPTION
-const NUM_PLAYERS = toInt(process.env.REACT_APP_NUM_PLAYERS!)
 
 const Game = React.lazy(() => import(`./${GAME_ID}/Game`))
 
@@ -39,15 +37,13 @@ export default function Lobby() {
     setPlayerName(e.target.value.trim())
   }
 
-  async function handleCreate() {
+  async function createGame(numPlayers: number) {
     if (!playerName.length) {
       alert('You need to have a name!')
       return
     }
     setCreateGameClicked(true)
-    const { matchID } = await lobbyClient.createMatch(GAME_ID, {
-      numPlayers: NUM_PLAYERS,
-    })
+    const { matchID } = await lobbyClient.createMatch(GAME_ID, { numPlayers })
     const { playerCredentials } = await lobbyClient.joinMatch(
       GAME_ID,
       matchID,
@@ -69,7 +65,7 @@ export default function Lobby() {
 
   const handleKeyPress = ({ key }: KeyboardEvent) => {
     if (key === 'Enter') {
-      handleCreate()
+      createGame(4)
     }
   }
 
@@ -85,9 +81,17 @@ export default function Lobby() {
             placeholder="Your name"
             onKeyPress={handleKeyPress}
           />
-          <Button onClick={handleCreate} disabled={createGameClicked}>
-            {createGameClicked ? 'Loading...' : 'Create a Game'}
-          </Button>
+          {[3, 4].map((numPlayers, i) => (
+            <Button
+              key={i}
+              disabled={createGameClicked}
+              onClick={() => createGame(numPlayers)}
+            >
+              {createGameClicked
+                ? 'Loading...'
+                : `Create ${numPlayers}-player Game`}
+            </Button>
+          ))}
         </div>
       </div>
     </div>
@@ -130,7 +134,7 @@ function MatchLobby({ matchID, lobbyClient }: MatchLobbyProps) {
     if (match?.nextMatchID) {
       window.location.href = `/${match.nextMatchID}`
     }
-  }, [match])
+  })
 
   if (!match) {
     return null

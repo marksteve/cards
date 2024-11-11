@@ -8,9 +8,9 @@ import { toInt } from '../utils'
 
 export const GAME_ID = 'dos'
 
-const NUM_PLAYERS = 4
 const RANKS = '3456789TJQKA2'
 const SUITS = 'CSHD'
+export const NUM_CARDS = RANKS.length * SUITS.length
 
 enum Combi {
   None,
@@ -231,13 +231,11 @@ export const isValidMove = (
       return false
     }
     const lastPlayValue = getPlayValue(lastPlay?.cards)
-    if (lastPlayValue === null) {
-      console.error(`Last play was invalid: ${lastPlay}`)
-    } else {
-      if (play.value < lastPlayValue) {
-        console.log('Play value lower than last play')
-        return false
-      }
+    if (!lastPlayValue) {
+      console.error(`Last play was invalid: ${JSON.stringify(lastPlay)}`)
+    } else if (play.value < lastPlayValue) {
+      console.log('Play value lower than last play')
+      return false
     }
   }
 
@@ -256,26 +254,43 @@ export type State = {
 
 export const Dos: Game<State> = {
   name: GAME_ID,
-  minPlayers: NUM_PLAYERS,
-  maxPlayers: NUM_PLAYERS,
+  minPlayers: 3,
+  maxPlayers: 4,
   playerView: PlayerView.STRIP_SECRETS,
 
   setup: (ctx): State => {
-    const deck = ctx.random!.Shuffle(Card.newDeck())
+    let deck = ctx.random!.Shuffle(Card.newDeck())
     const players: Record<number, CardStr[]> = {}
     const remaining: Record<number, number> = {}
 
+    // Remove excess card(s) making sure that the 3 of clubs is still there
+    const excess = NUM_CARDS % ctx.numPlayers
+    while (deck.slice(0, excess).some((c) => c.value === Card.lowest.value)) {
+      deck = ctx.random!.Shuffle(Card.newDeck())
+    }
+    deck.splice(0, excess)
+
     // Deal cards
-    let leader = 0
     let player = 0
+    const cardsPerPlayer = Math.floor(NUM_CARDS / ctx.numPlayers)
     while (deck.length > 0) {
       player = Object.keys(players).length
-      const hand = deck.splice(0, 13)
-      if (hand.some((c) => c.value === Card.lowest.value)) {
-        leader = player
-      }
+      const hand = deck.splice(0, cardsPerPlayer)
       players[player] = hand.map(String)
       remaining[player] = hand.length
+    }
+
+    // Determine who starts as leader
+    let leader = -1
+    for (let player = 0; player < ctx.numPlayers; player++) {
+      const hand = players[player]
+      if (hand.some((c) => c === '3C')) {
+        leader = player
+        break
+      }
+    }
+    if (leader === -1) {
+      console.error("Couldn't determine leader! Missing 3 of clubs?")
     }
 
     return {
@@ -353,7 +368,6 @@ function getNextPlayer(G: State, ctx: Ctx): number {
 
 export default Client({
   game: Dos,
-  numPlayers: NUM_PLAYERS,
   board: React.lazy(() => import('./Board')),
   multiplayer: SocketIO({ server: process.env.REACT_APP_GAME_SERVER }),
   debug: false,

@@ -10,7 +10,7 @@ import OtherHand from '../OtherHand'
 import Button from '../Button'
 import { toInt } from '../utils'
 import styles from './Board.module.css'
-import { GAME_ID, State } from './Game'
+import { GAME_ID, State, NUM_CARDS } from './Game'
 
 export default function Board({
   G,
@@ -27,6 +27,7 @@ export default function Board({
   useEffect(onGameStart, [])
 
   const { players, remaining, discarded, lastPlay } = G
+  const maxHandCards = NUM_CARDS / ctx.numPlayers
 
   const currentPlayer = toInt(ctx.currentPlayer)
   const isSpectator = playerID === ''
@@ -48,7 +49,7 @@ export default function Board({
     const previousMove =
       G.lastPlay?.player! === previousPlayer ? 'play' : 'pass'
     new Audio(`/assets/audio/${previousMove}.mp3`).play()
-  }, [ctx.currentPlayer])
+  })
 
   async function handlePlayAgain() {
     const lobbyClient = new LobbyClient({
@@ -63,14 +64,24 @@ export default function Board({
   }
 
   return (
-    <div className={styles.board}>
-      <OtherHands hands={otherHands} currentPlayer={currentPlayer} />
+    <div
+      className={styles.board}
+      style={{
+        gridTemplateColumns: `repeat(${ctx.numPlayers - 1}, 1fr)`,
+      }}
+    >
+      <OtherHands
+        hands={otherHands}
+        currentPlayer={currentPlayer}
+        maxHandCards={maxHandCards}
+      />
       <Mat discarded={discarded} lastPlayer={playerName(lastPlay?.player!)} />
       {isSpectator ? (
         <SpectatorHand
           name={matchData![player].name!}
           handCount={remaining[player]}
           isCurrent={currentPlayer === player}
+          maxHandCards={maxHandCards}
         />
       ) : (
         <BoardHand
@@ -101,9 +112,10 @@ type OtherHandsProps = {
     cards: CardStr[]
   }[]
   currentPlayer: number
+  maxHandCards: number
 }
 
-function OtherHands({ hands, currentPlayer }: OtherHandsProps) {
+function OtherHands({ hands, currentPlayer, maxHandCards }: OtherHandsProps) {
   return (
     <>
       {hands.map((hand) => (
@@ -112,6 +124,7 @@ function OtherHands({ hands, currentPlayer }: OtherHandsProps) {
           name={hand.name}
           hand={hand.cards}
           isCurrent={currentPlayer === hand.player}
+          maxHandCards={maxHandCards}
         />
       ))}
     </>
