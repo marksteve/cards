@@ -7,6 +7,7 @@ type OtherHandProps = {
   hand: CardStr[]
   isCurrent: boolean
   maxHandCards: number
+  isLeader: boolean
 }
 
 export default function OtherHand({
@@ -14,13 +15,16 @@ export default function OtherHand({
   hand,
   isCurrent,
   maxHandCards,
+  isLeader,
 }: OtherHandProps) {
   const classNames = [styles.hand]
   isCurrent && classNames.push(styles.handCurrent)
 
   return (
     <div className={classNames.join(' ')}>
-      <h2>{name}</h2>
+      <h2>
+        {name} {isLeader ? '👑' : null}
+      </h2>
       <div
         className={styles.handCards}
         style={{

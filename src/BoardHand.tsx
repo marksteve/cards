@@ -121,7 +121,7 @@ export default function BoardHand({
   return (
     <div className={classNames.join(' ')}>
       <h2>
-        {name}
+        {name} {isLeader ? '👑' : null}
         {actions}
       </h2>
       <DragDropContext onDragEnd={handleDragEnd}>
