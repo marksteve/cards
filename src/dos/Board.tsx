@@ -74,6 +74,7 @@ export default function Board({
         hands={otherHands}
         currentPlayer={currentPlayer}
         maxHandCards={maxHandCards}
+        leader={G.leader}
       />
       <Mat discarded={discarded} lastPlayer={playerName(lastPlay?.player!)} />
       {isSpectator ? (
@@ -90,7 +91,7 @@ export default function Board({
           onPlay={moves.play}
           onPass={moves.pass}
           isCurrent={currentPlayer === player}
-          isLeader={G.leader === ctx.playOrderPos}
+          isLeader={G.leader === player}
           lastPlay={G.lastPlay}
           hasStarted={G.hasStarted}
           currentPlayer={toInt(ctx.currentPlayer)}
@@ -113,9 +114,10 @@ type OtherHandsProps = {
   }[]
   currentPlayer: number
   maxHandCards: number
+  leader: number
 }
 
-function OtherHands({ hands, currentPlayer, maxHandCards }: OtherHandsProps) {
+function OtherHands({ hands, currentPlayer, maxHandCards, leader }: OtherHandsProps) {
   return (
     <>
       {hands.map((hand) => (
@@ -123,8 +125,9 @@ function OtherHands({ hands, currentPlayer, maxHandCards }: OtherHandsProps) {
           key={hand.player}
           name={hand.name}
           hand={hand.cards}
-          isCurrent={currentPlayer === hand.player}
+          isCurrent={hand.player === currentPlayer}
           maxHandCards={maxHandCards}
+          isLeader={hand.player === leader}
         />
       ))}
     </>
@@ -133,12 +136,11 @@ function OtherHands({ hands, currentPlayer, maxHandCards }: OtherHandsProps) {
 
 type MatProps = {
   discarded: string[][]
-  lastPlayer: string
 }
 
-function Mat({ discarded, lastPlayer }: MatProps) {
+function Mat({ discarded }: MatProps) {
   return (
-    <div className={styles.mat} title={`Played by ${lastPlayer}`}>
+    <div className={styles.mat}>
       {discarded.map((cards, i) => (
         <Play key={i} cards={cards} isActive={i === discarded.length - 1} />
       ))}
