@@ -21,6 +21,7 @@ type BoardHandProps = {
   lastPlay: Play | null
   hasStarted: boolean
   currentPlayer: number
+  maxHandCards: number
 }
 
 export default function BoardHand({
@@ -33,6 +34,7 @@ export default function BoardHand({
   lastPlay,
   hasStarted,
   currentPlayer,
+  maxHandCards,
 }: BoardHandProps) {
   const classNames = [styles.hand]
   isCurrent && classNames.push(styles.handCurrent)
@@ -131,7 +133,7 @@ export default function BoardHand({
             <div
               className={styles.handCards}
               ref={provided.innerRef}
-              style={getHandStyle(17)}
+              style={getHandStyle(maxHandCards)}
             >
               {ordered.map((card, i) => (
                 <Draggable key={card} draggableId={card} index={i}>

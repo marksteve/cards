@@ -95,6 +95,7 @@ export default function Board({
           lastPlay={G.lastPlay}
           hasStarted={G.hasStarted}
           currentPlayer={toInt(ctx.currentPlayer)}
+          maxHandCards={maxHandCards}
         />
       )}
       <GameOver

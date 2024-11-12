@@ -22,7 +22,7 @@ enum Combi {
 }
 
 const getCardValue = (card: Card) => {
-  return RANKS.indexOf(card.rank) * 4 + SUITS.indexOf(card.suit)
+  return RANKS.indexOf(card.rank) * SUITS.length + SUITS.indexOf(card.suit)
 }
 
 export class Card {
