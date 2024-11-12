@@ -9,6 +9,7 @@ import { Card, Play, isValidMove } from './dos/Game'
 import BoardCard from './BoardCard'
 import styles from './BoardHand.module.css'
 import Button from './Button'
+import { getHandStyle } from './utils'
 
 type BoardHandProps = {
   hand: CardStr[]
@@ -130,9 +131,7 @@ export default function BoardHand({
             <div
               className={styles.handCards}
               ref={provided.innerRef}
-              style={{
-                gridTemplateColumns: `repeat(auto-fill, calc(100% / ${17}))`,
-              }}
+              style={getHandStyle(17)}
             >
               {ordered.map((card, i) => (
                 <Draggable key={card} draggableId={card} index={i}>

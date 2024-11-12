@@ -1,6 +1,7 @@
 import React from 'react'
 import BoardCard from './BoardCard'
 import styles from './BoardHand.module.css'
+import { getHandStyle } from './utils'
 
 type SpectatorHandProps = {
   name: string
@@ -24,10 +25,7 @@ export default function SpectatorHand({
   return (
     <div className={classNames.join(' ')}>
       <h2>{name}</h2>
-      <div
-        className={styles.handCards}
-        style={{ gridTemplateColumns: `repeat(auto-fill, calc(100% / ${17}))` }}
-      >
+      <div className={styles.handCards} style={getHandStyle(17)}>
         {hand.map((card, i) => (
           <BoardCard key={i} card={card} />
         ))}
