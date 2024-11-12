@@ -127,7 +127,13 @@ export default function BoardHand({
       <DragDropContext onDragEnd={handleDragEnd}>
         <Droppable droppableId="droppable" direction="horizontal">
           {(provided) => (
-            <div className={styles.handCards} ref={provided.innerRef}>
+            <div
+              className={styles.handCards}
+              ref={provided.innerRef}
+              style={{
+                gridTemplateColumns: `repeat(auto-fill, calc(100% / ${17}))`,
+              }}
+            >
               {ordered.map((card, i) => (
                 <Draggable key={card} draggableId={card} index={i}>
                   {(...draggable) => (

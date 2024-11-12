@@ -26,9 +26,7 @@ export default function SpectatorHand({
       <h2>{name}</h2>
       <div
         className={styles.handCards}
-        style={{
-          gridTemplateColumns: `repeat(auto-fill, calc(100% / ${maxHandCards})))`,
-        }}
+        style={{ gridTemplateColumns: `repeat(auto-fill, calc(100% / ${17}))` }}
       >
         {hand.map((card, i) => (
           <BoardCard key={i} card={card} />
