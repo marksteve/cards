@@ -26,7 +26,7 @@ export default function OtherHand({
       <h2>
         {name} {isLeader ? '👑' : null}
       </h2>
-      <div className={styles.handCards} style={getHandStyle(17)}>
+      <div className={styles.handCards} style={getHandStyle(maxHandCards)}>
         {hand.map((card, i) => (
           <BoardCard key={i} card={card} />
         ))}
