@@ -25,7 +25,7 @@ export default function SpectatorHand({
   return (
     <div className={classNames.join(' ')}>
       <h2>{name}</h2>
-      <div className={styles.handCards} style={getHandStyle(17)}>
+      <div className={styles.handCards} style={getHandStyle(maxHandCards)}>
         {hand.map((card, i) => (
           <BoardCard key={i} card={card} />
         ))}
