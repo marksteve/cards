@@ -9,6 +9,7 @@ import { Card, Play, isValidMove } from './dos/Game'
 import BoardCard from './BoardCard'
 import styles from './BoardHand.module.css'
 import Button from './Button'
+import { getHandStyle } from './utils'
 
 type BoardHandProps = {
   hand: CardStr[]
@@ -20,6 +21,7 @@ type BoardHandProps = {
   lastPlay: Play | null
   hasStarted: boolean
   currentPlayer: number
+  maxHandCards: number
 }
 
 export default function BoardHand({
@@ -32,6 +34,7 @@ export default function BoardHand({
   lastPlay,
   hasStarted,
   currentPlayer,
+  maxHandCards,
 }: BoardHandProps) {
   const classNames = [styles.hand]
   isCurrent && classNames.push(styles.handCurrent)
@@ -127,7 +130,11 @@ export default function BoardHand({
       <DragDropContext onDragEnd={handleDragEnd}>
         <Droppable droppableId="droppable" direction="horizontal">
           {(provided) => (
-            <div className={styles.handCards} ref={provided.innerRef}>
+            <div
+              className={styles.handCards}
+              ref={provided.innerRef}
+              style={getHandStyle(maxHandCards)}
+            >
               {ordered.map((card, i) => (
                 <Draggable key={card} draggableId={card} index={i}>
                   {(...draggable) => (

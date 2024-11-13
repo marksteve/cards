@@ -76,7 +76,7 @@ export default function Board({
         maxHandCards={maxHandCards}
         leader={G.leader}
       />
-      <Mat discarded={discarded} lastPlayer={playerName(lastPlay?.player!)} />
+      <Mat discarded={discarded} />
       {isSpectator ? (
         <SpectatorHand
           name={matchData![player].name!}
@@ -95,6 +95,7 @@ export default function Board({
           lastPlay={G.lastPlay}
           hasStarted={G.hasStarted}
           currentPlayer={toInt(ctx.currentPlayer)}
+          maxHandCards={maxHandCards}
         />
       )}
       <GameOver
@@ -117,7 +118,12 @@ type OtherHandsProps = {
   leader: number
 }
 
-function OtherHands({ hands, currentPlayer, maxHandCards, leader }: OtherHandsProps) {
+function OtherHands({
+  hands,
+  currentPlayer,
+  maxHandCards,
+  leader,
+}: OtherHandsProps) {
   return (
     <>
       {hands.map((hand) => (

@@ -21,7 +21,7 @@
 }
 
 .play > [data-board-card] {
-  width: calc(100% / var(--max-cards));
+  width: 10%;
   position: absolute;
   top: 50%;
   left: 50%;
