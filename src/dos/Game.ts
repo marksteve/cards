@@ -361,9 +361,12 @@ export const Dos: Game<State> = {
 }
 
 function getNextPlayer(G: State, ctx: Ctx): number {
-  return [1, 2, 3]
-    .map((i) => (ctx.playOrderPos + i) % ctx.numPlayers)
-    .filter((player) => !G.winners.includes(player))[0]
+  for (let i = 1; i < ctx.numPlayers; i++) {
+    const player = (ctx.playOrderPos + i) % ctx.numPlayers
+    if (!G.winners.includes(player)) {
+      return player
+    }
+  }
 }
 
 export default Client({
