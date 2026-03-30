@@ -356,7 +356,7 @@ export const Dos: Game<State> = {
   },
 
   endIf: (G, ctx) => {
-    return G.winners.length === 3
+    return G.winners.length === ctx.numPlayers - 1
   },
 }
 
